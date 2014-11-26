@@ -20,7 +20,9 @@ install:
   - rosdep update
   - mkdir -p /tmp/ws/src
   - ln -s `pwd` /tmp/ws/src/package
-  - cd /tmp/ws
+  - cd /tmp/ws/src
+  - git clone https://github.com/WPI-RAIL/librms.git
+  - cd ../
   - rosdep install --from-paths src --ignore-src --rosdistro hydro -y
 
 script:
