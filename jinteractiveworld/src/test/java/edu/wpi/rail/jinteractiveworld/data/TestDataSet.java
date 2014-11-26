@@ -308,14 +308,14 @@ public class TestDataSet {
 		assertEquals(0, data.size());
 	}
 
-	@Test
-	public void testLoadDataFolder() {
-		ArrayList<DataSet> data = DataSet.loadDataFolder("data/table_setting/");
-		assertEquals(20, data.size());
-		for (DataSet ds : data) {
-			assertEquals(1, ds.size() / ds.size());
-		}
-	}
+//	@Test
+//	public void testLoadDataFolder() {
+//		ArrayList<DataSet> data = DataSet.loadDataFolder("data/table_setting/");
+//		assertEquals(20, data.size());
+//		for (DataSet ds : data) {
+//			assertEquals(1, ds.size() / ds.size());
+//		}
+//	}
 
 	@Test
 	public void testExtractTargetFromNameInvalid() {

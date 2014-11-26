@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(interactive_world_parser)
+project(jinteractiveworld)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -19,13 +19,17 @@ catkin_package()
 ## Build ##
 ###########
 
+execute_process(
+  COMMAND mvn assembly:assembly
+  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/
+)
 
 #############
 ## Install ##
 #############
 
 ## Copy header files
-#install(DIRECTORY include/${PROJECT_NAME}/
-#  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-#  FILES_MATCHING PATTERN "*.hpp" PATTERN "*.h"
-#)
+install(DIRECTORY target/
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/target
+  FILES_MATCHING PATTERN "${PROJECT_NAME}-ROS-SNAPSHOT-jar-with-dependencies.jar"
+)

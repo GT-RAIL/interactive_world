@@ -1,68 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>edu.wpi.rail</groupId>
 	<artifactId>jinteractiveworld</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>ROS-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>jinteractiveworld</name>
 	<url>https://github.com/WPI-RAIL/interactive_world</url>
 	<licenses>
-		<license>
-			<name>BSD License</name>
-			<url>https://raw.github.com/WPI-RAIL/interactive_world/develop/LICENSE</url>
-			<distribution>repo</distribution>
-			<comments>The BSD 3-Clause License</comments>
-		</license>
+	<license>
+		<name>BSD License</name>
+		<url>https://raw.github.com/WPI-RAIL/interactive_world/develop/LICENSE</url>
+		<distribution>repo</distribution>
+		<comments>The BSD 3-Clause License</comments>
+	</license>
 	</licenses>
-	<description>The Interactive World Learner</description>
+	<description>The Interactive World Planner and Learner</description>
 
 	<issueManagement>
-		<system>GitHub</system>
-		<url>https://github.com/WPI-RAIL/interactive_world/issues</url>
+	<system>GitHub</system>
+	<url>https://github.com/WPI-RAIL/interactive_world/issues</url>
 	</issueManagement>
 
 	<scm>
-		<connection>scm:git:git://github.com/WPI-RAIL/interactive_world.git</connection>
-		<developerConnection>scm:git:git@github.com:WPI-RAIL/interactive_world.git</developerConnection>
-		<url>https://github.com/WPI-RAIL/interactive_world</url>
-		<tag>HEAD</tag>
+	<connection>scm:git:git://github.com/WPI-RAIL/interactive_world.git</connection>
+	<developerConnection>scm:git:git@github.com:WPI-RAIL/interactive_world.git</developerConnection>
+	<url>https://github.com/WPI-RAIL/interactive_world</url>
+	<tag>HEAD</tag>
 	</scm>
 
 	<properties>
-		<jdk.version>1.7</jdk.version>
+	<jdk.version>1.7</jdk.version>
 	</properties>
 
 	<dependencies>
-		<dependency>
-			<groupId>nz.ac.waikato.cms.weka</groupId>
-			<artifactId>weka-stable</artifactId>
-			<version>3.6.10</version>
-		</dependency>
-		<dependency>
-			<groupId>org.piccolo2d</groupId>
-			<artifactId>piccolo2d-core</artifactId>
-			<version>3.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.googlecode.efficient-java-matrix-library</groupId>
-			<artifactId>ejml</artifactId>
-			<version>0.24</version>
-		</dependency>
-		<dependency>
-			<groupId>edu.wpi.rail</groupId>
-			<artifactId>jrosbridge</artifactId>
-			<version>0.1.0</version>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.0</version>
-			<scope>test</scope>
-		</dependency>
+	<dependency>
+		<groupId>nz.ac.waikato.cms.weka</groupId>
+		<artifactId>weka-stable</artifactId>
+		<version>3.6.10</version>
+	</dependency>
+	<dependency>
+		<groupId>org.piccolo2d</groupId>
+		<artifactId>piccolo2d-core</artifactId>
+		<version>3.0</version>
+	</dependency>
+	<dependency>
+		<groupId>com.googlecode.efficient-java-matrix-library</groupId>
+		<artifactId>ejml</artifactId>
+		<version>0.24</version>
+	</dependency>
+	<dependency>
+		<groupId>edu.wpi.rail</groupId>
+		<artifactId>jrosbridge</artifactId>
+		<version>0.1.0</version>
+	</dependency>
+	<dependency>
+		<groupId>junit</groupId>
+		<artifactId>junit</artifactId>
+		<version>4.0</version>
+		<scope>test</scope>
+	</dependency>
 	</dependencies>
 
 	<build>
@@ -73,8 +73,8 @@
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>3.1</version>
 					<configuration>
-						<source>${jdk.version}</source>
-						<target>${jdk.version}</target>
+					<source>${jdk.version}</source>
+					<target>${jdk.version}</target>
 					</configuration>
 				</plugin>
 				<plugin>
@@ -98,7 +98,7 @@
 						<execution>
 							<id>attach-javadocs</id>
 							<goals>
-								<goal>jar</goal>
+							<goal>jar</goal>
 							</goals>
 						</execution>
 					</executions>
@@ -107,7 +107,7 @@
 		</pluginManagement>
 		<resources>
 			<resource>
-				<directory>data</directory>
+			<directory>data</directory>
 			</resource>
 		</resources>
 	</build>
@@ -121,7 +121,7 @@
 			<organization>WPI RAIL</organization>
 			<organizationUrl>http://web.cs.wpi.edu/~rail/</organizationUrl>
 			<roles>
-				<role>developer</role>
+			<role>developer</role>
 			</roles>
 			<timezone>-5</timezone>
 		</developer>

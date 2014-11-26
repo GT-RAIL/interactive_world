@@ -1,5 +1,5 @@
 <package>
-  <name>interactive_world_parser</name>
+  <name>jinteractiveworld</name>
   <version>0.0.0</version>
   <description>ROS Wrapper Package for the Java Interactive World Learner</description>
 
