@@ -28,8 +28,13 @@ execute_process(
 ## Install ##
 #############
 
+## Copy scripts as executables
+install(PROGRAMS
+  scripts/interactive_world_learner
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
 ## Copy header files
-install(DIRECTORY target/
+install(FILES target/${PROJECT_NAME}-ROS-SNAPSHOT-jar-with-dependencies.jar
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/target
-  FILES_MATCHING PATTERN "${PROJECT_NAME}-ROS-SNAPSHOT-jar-with-dependencies.jar"
 )

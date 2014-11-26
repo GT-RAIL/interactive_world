@@ -85,7 +85,7 @@
 						</descriptorRefs>
 						<archive>
 							<manifest>
-								<mainClass>edu.wpi.rail.jinteractiveworld.task.TableSetting</mainClass>
+								<mainClass>edu.wpi.rail.jinteractiveworld.ros.InteractiveWorldLearner</mainClass>
 							</manifest>
 						</archive>
 					</configuration>

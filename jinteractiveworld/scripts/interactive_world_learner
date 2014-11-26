@@ -1,0 +1,3 @@
+#!/bin/bash
+
+java -cp $(rospack find jinteractiveworld)/target/jinteractiveworld-ROS-SNAPSHOT-jar-with-dependencies.jar edu.wpi.rail.jinteractiveworld.ros.InteractiveWorldLearner
