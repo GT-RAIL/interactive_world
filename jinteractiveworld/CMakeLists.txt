@@ -34,7 +34,7 @@ install(PROGRAMS
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
-## Copy header files
+## Copy JAR files
 install(FILES target/${PROJECT_NAME}-ROS-SNAPSHOT-jar-with-dependencies.jar
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/target
 )
