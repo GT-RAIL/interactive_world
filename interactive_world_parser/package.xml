@@ -1,0 +1,28 @@
+<package>
+  <name>interactive_world_parser</name>
+  <version>0.0.0</version>
+  <description>The Main Parser for the Interactive World Database</description>
+
+  <author email="rctoris@wpi.edu">Russell Toris</author>
+  <maintainer email="rctoris@wpi.edu">Russell Toris</maintainer>
+  
+  <url type="website">http://ros.org/wiki/interactive_world_parser</url>
+  <url type="bugtracker">https://github.com/WPI-RAIL/interactive_world/issues</url>
+  <url type="repository">https://github.com/WPI-RAIL/interactive_world</url>
+
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>roscpp</build_depend>
+  <build_depend>librms</build_depend>
+  <build_depend>libjsoncpp-dev</build_depend>
+  <build_depend>interactive_world_msgs</build_depend>
+  <build_depend>tf2</build_depend>
+
+  <run_depend>roscpp</run_depend>
+  <run_depend>librms</run_depend>
+  <run_depend>libjsoncpp-dev</run_depend>
+  <run_depend>interactive_world_msgs</run_depend>
+  <run_depend>tf2</run_depend>
+</package>
