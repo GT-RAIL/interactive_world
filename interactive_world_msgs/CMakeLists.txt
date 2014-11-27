@@ -18,6 +18,8 @@ add_message_files(
   PointOfInterest.msg
   Room.msg
   Surface.msg
+  Placement.msg
+  PlacementSet.msg
 )
 
 ## Generate added messages and services with any dependencies listed here
