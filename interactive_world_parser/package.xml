@@ -27,4 +27,6 @@
   <run_depend>interactive_world_msgs</run_depend>
   <run_depend>tf2</run_depend>
   <run_depend>std_srvs</run_depend>
+  <run_depend>rosbridge_server</run_depend>
+  <run_depend>jinteractiveworld</run_depend>
 </package>

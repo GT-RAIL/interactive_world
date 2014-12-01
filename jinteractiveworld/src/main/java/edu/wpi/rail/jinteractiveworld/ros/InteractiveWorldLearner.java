@@ -21,7 +21,8 @@ public class InteractiveWorldLearner {
 		System.out.println(" success!");
 
 		// setup the services
-		Service s = new Service(ros, InteractiveWorldLearner.LEARN_HYPOTHESES_SERVICE_NAME, "");
+		Service s = new Service(ros, InteractiveWorldLearner.LEARN_HYPOTHESES_SERVICE_NAME, "std_srvs/Empty");
+		s.advertiseService(null);
 	}
 
 	public void spin() throws InterruptedException {

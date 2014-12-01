@@ -24,6 +24,7 @@ public:
 
   bool parse_cb(std_srvs::Empty::Request &req, std_srvs::Empty::Response &resp);
   bool save_files_cb(std_srvs::Empty::Request &req, std_srvs::Empty::Response &resp);
+  bool parse_and_save_files_cb(std_srvs::Empty::Request &req, std_srvs::Empty::Response &resp);
 
 private:
   interactive_world_msgs::Configuration parse_json_config(Json::Value &config);
@@ -42,7 +43,8 @@ private:
   std::string host_, user_, password_, database_;
   int port_, study_id_;
   std::map<uint, std::map<std::string, std::vector<tf2::Transform> > > data_;
-  ros::ServiceServer parse_, save_files_;
+  ros::ServiceServer parse_, save_files_, parse_and_save_files_;
+  ros::ServiceClient learn_hypotheses_;
 };
 
 int main(int argc, char **argv);

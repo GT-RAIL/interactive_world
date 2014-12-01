@@ -8,10 +8,10 @@ interactive_world_parser::interactive_world_parser() :
 {
   // grab params
   private_.param("host", host_, string(RMS_DEFAULT_SERVER));
+  private_.param("port", port_, RMS_DEFAULT_PORT);
   private_.param("user", user_, string(RMS_DEFAULT_USER));
   private_.param("password", password_, string(RMS_DEFAULT_PASSWORD));
   private_.param("database", database_, string(RMS_DEFAULT_DATABASE));
-  private_.param("port", port_, RMS_DEFAULT_PORT);
   private_.param("study_id", study_id_, DEFAULT_STUDY_ID);
 
   // create the client
@@ -27,6 +27,12 @@ interactive_world_parser::interactive_world_parser() :
   // setup servers
   parse_ = private_.advertiseService("parse", &interactive_world_parser::parse_cb, this);
   save_files_ = private_.advertiseService("save_files", &interactive_world_parser::save_files_cb, this);
+  parse_and_save_files_ = private_.advertiseService("parse_and_save_files", &interactive_world_parser::parse_and_save_files_cb, this);
+
+  // wait for external service
+  learn_hypotheses_ = private_.serviceClient<std_srvs::Empty>("/interactive_world_learner/learn_hypotheses");
+  ROS_INFO("Waiting for /interactive_world_learner/learn_hypotheses...");
+  learn_hypotheses_.waitForExistence(ros::DURATION_MAX);
 
   ROS_INFO("Interactive World Parser Initialized");
 }
@@ -40,6 +46,7 @@ interactive_world_parser::~interactive_world_parser()
 bool interactive_world_parser::parse_cb(std_srvs::Empty::Request &req, std_srvs::Empty::Response &resp)
 {
   ROS_INFO("=== BEGINING PARSE ===");
+  data_.clear();
   librms::study study = client_->get_study((unsigned int) study_id_);
   ROS_INFO("Running over study \"%s\"...", study.get_name().c_str());
 
@@ -131,6 +138,12 @@ bool interactive_world_parser::save_files_cb(std_srvs::Empty::Request &req, std_
   ROS_INFO("Finished!");
 
   return true;
+}
+
+
+bool interactive_world_parser::parse_and_save_files_cb(std_srvs::Empty::Request &req, std_srvs::Empty::Response &resp)
+{
+  return this->parse_cb(req, resp) && this->save_files_cb(req, resp);
 }
 
 

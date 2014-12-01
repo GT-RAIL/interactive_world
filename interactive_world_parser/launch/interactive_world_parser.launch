@@ -1,0 +1,20 @@
+<launch>
+  <arg name="host" default="robotsfor.me" />
+  <arg name="port" default="3306" />
+  <arg name="user" default="ros" />
+  <arg name="password" default="" />
+  <arg name="database" default="rms" />
+  <arg name="study_id" default="1" />
+
+  <node name="interactive_world_parser" pkg="interactive_world_parser" type="interactive_world_parser" output="screen">
+    <param name="host" value="$(arg host)" />
+    <param name="user" value="$(arg user)" />
+    <param name="password" value="$(arg password)" />
+    <param name="database" value="$(arg database)" />
+    <param name="study_id" value="$(arg study_id)" />
+  </node>
+
+  <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch" />
+
+  <node name="interactive_world_learner" pkg="jinteractiveworld" type="interactive_world_learner" output="screen" />
+</launch>
