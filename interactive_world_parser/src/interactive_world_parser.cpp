@@ -24,6 +24,10 @@ interactive_world_parser::interactive_world_parser() :
     exit(EXIT_FAILURE);
   }
 
+  // setup servers
+  parse_ = private_.advertiseService("parse", &interactive_world_parser::parse_cb, this);
+  save_files_ = private_.advertiseService("save_files", &interactive_world_parser::save_files_cb, this);
+
   ROS_INFO("Interactive World Parser Initialized");
 }
 
@@ -33,7 +37,7 @@ interactive_world_parser::~interactive_world_parser()
   delete client_;
 }
 
-void interactive_world_parser::parse()
+bool interactive_world_parser::parse_cb(std_srvs::Empty::Request &req, std_srvs::Empty::Response &resp)
 {
   ROS_INFO("=== BEGINING PARSE ===");
   librms::study study = client_->get_study((unsigned int) study_id_);
@@ -96,8 +100,13 @@ void interactive_world_parser::parse()
   }
 
   ROS_INFO("=== PARSE FINISHED ===");
-  ROS_INFO("Writing data...");
 
+  return true;
+}
+
+bool interactive_world_parser::save_files_cb(std_srvs::Empty::Request &req, std_srvs::Empty::Response &resp)
+{
+  ROS_INFO("Writing data...");
   // save the data
   for (map<uint, map<string, vector<tf2::Transform> > >::iterator it = data_.begin(); it != data_.end(); ++it)
   {
@@ -119,8 +128,9 @@ void interactive_world_parser::parse()
       file.close();
     }
   }
-
   ROS_INFO("Finished!");
+
+  return true;
 }
 
 
@@ -342,5 +352,6 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "interactive_world_parser");
 
   interactive_world_parser parser;
-  parser.parse();
+
+  ros::spin();
 }

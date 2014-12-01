@@ -7,6 +7,7 @@
 #include <geometry_msgs/Pose.h>
 #include <interactive_world_msgs/Configuration.h>
 #include <tf2/LinearMath/Transform.h>
+#include <std_srvs/Empty.h>
 #include <map>
 #include <vector>
 
@@ -21,7 +22,8 @@ public:
 
   ~interactive_world_parser();
 
-  void parse();
+  bool parse_cb(std_srvs::Empty::Request &req, std_srvs::Empty::Response &resp);
+  bool save_files_cb(std_srvs::Empty::Request &req, std_srvs::Empty::Response &resp);
 
 private:
   interactive_world_msgs::Configuration parse_json_config(Json::Value &config);
@@ -34,12 +36,13 @@ private:
 
   void parse_json_placement(Json::Value &placement, interactive_world_msgs::Configuration &config, unsigned int condition_id, std::vector<librms::log> logs);
 
-  ros::NodeHandle node_, private_;
+  ros::NodeHandle private_;
 
   librms::rms *client_;
   std::string host_, user_, password_, database_;
   int port_, study_id_;
   std::map<uint, std::map<std::string, std::vector<tf2::Transform> > > data_;
+  ros::ServiceServer parse_, save_files_;
 };
 
 int main(int argc, char **argv);
