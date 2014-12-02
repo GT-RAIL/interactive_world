@@ -6,10 +6,10 @@
 #include <jsoncpp/json/json.h>
 #include <geometry_msgs/Pose.h>
 #include <interactive_world_msgs/Configuration.h>
+#include <interactive_world_msgs/TaskTrainingData.h>
 #include <tf2/LinearMath/Transform.h>
 #include <std_srvs/Empty.h>
 #include <map>
-#include <vector>
 
 #define DEFAULT_STUDY_ID 1
 
@@ -23,7 +23,9 @@ public:
   ~interactive_world_parser();
 
   bool parse_cb(std_srvs::Empty::Request &req, std_srvs::Empty::Response &resp);
+
   bool save_files_cb(std_srvs::Empty::Request &req, std_srvs::Empty::Response &resp);
+
   bool parse_and_save_files_cb(std_srvs::Empty::Request &req, std_srvs::Empty::Response &resp);
 
 private:
@@ -37,12 +39,14 @@ private:
 
   void parse_json_placement(Json::Value &placement, interactive_world_msgs::Configuration &config, unsigned int condition_id, std::vector<librms::log> logs);
 
+  void add_placement_to_data(uint condition_id, tf2::Transform &tf, interactive_world_msgs::Item item, interactive_world_msgs::Room room, interactive_world_msgs::Surface surface, std::string reference_frame_id);
+
   ros::NodeHandle private_;
 
   librms::rms *client_;
   std::string host_, user_, password_, database_;
   int port_, study_id_;
-  std::map<uint, std::map<std::string, std::vector<tf2::Transform> > > data_;
+  std::map<uint, interactive_world_msgs::TaskTrainingData> data_;
   ros::ServiceServer parse_, save_files_, parse_and_save_files_;
   ros::ServiceClient learn_hypotheses_;
 };

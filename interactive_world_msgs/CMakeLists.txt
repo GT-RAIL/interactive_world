@@ -15,11 +15,12 @@ add_message_files(
   FILES
   Configuration.msg
   Item.msg
+  Placement.msg
+  PlacementSet.msg
   PointOfInterest.msg
   Room.msg
   Surface.msg
-  Placement.msg
-  PlacementSet.msg
+  TaskTrainingData.msg
 )
 
 ## Generate added messages and services with any dependencies listed here

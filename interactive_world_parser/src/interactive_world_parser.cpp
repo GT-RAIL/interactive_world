@@ -1,5 +1,6 @@
 #include <interactive_world_parser/interactive_world_parser.hpp>
 #include <fstream>
+#include <pwd.h>
 
 using namespace std;
 
@@ -115,22 +116,21 @@ bool interactive_world_parser::save_files_cb(std_srvs::Empty::Request &req, std_
 {
   ROS_INFO("Writing data...");
   // save the data
-  for (map<uint, map<string, vector<tf2::Transform> > >::iterator it = data_.begin(); it != data_.end(); ++it)
+  for (map<uint, interactive_world_msgs::TaskTrainingData>::iterator it = data_.begin(); it != data_.end(); ++it)
   {
     uint condition_id = it->first;
-    map<string, vector<tf2::Transform> > cur_map = it->second;
-    for (map<string, vector<tf2::Transform> >::iterator it2 = cur_map.begin(); it2 != cur_map.end(); ++it2)
+    interactive_world_msgs::TaskTrainingData &training = it->second;
+    for (uint i = 0; i < training.data.size(); i++)
     {
+      interactive_world_msgs::PlacementSet &placements = training.data[i];
       stringstream ss;
-      ss << condition_id << "-" << it2->first << ".csv";
+      ss << (getpwuid(getuid()))->pw_dir << "/" << condition_id << "-" << placements.item.name << "-in-" << placements.room.name << "-on-" << placements.surface.name << "-wrt-" << placements.reference_frame_id << ".csv";
       ofstream file;
       file.open(ss.str().c_str());
-      vector<tf2::Transform> data = it2->second;
-      for (uint i = 0; i < data.size(); i++)
+      for (uint j = 0; j < placements.placements.size(); j++)
       {
-        tf2::Transform &tf = data[i];
-        tf2::Vector3 &v = tf.getOrigin();
-        file << v.x() << "," << v.y() << "," << v.z() << "," << tf.getRotation().getAngle() << endl;
+        interactive_world_msgs::Placement &placement = placements.placements[j];
+        file << placement.position.x << "," << placement.position.y << "," << placement.position.z << "," << placement.rotation << endl;
       }
       file.close();
     }
@@ -218,6 +218,10 @@ void interactive_world_parser::parse_json_placement(Json::Value &placement, inte
   string surface_name = json_furniture["name"].asString();
   string object_name = json_object["name"].asString();
 
+  interactive_world_msgs::Item item_msg;
+  interactive_world_msgs::Room room_msg;
+  interactive_world_msgs::Surface surface_msg;
+
   // get what we need from the config
   vector<interactive_world_msgs::PointOfInterest> pois;
   for (uint i = 0; i < config.rooms.size(); i++)
@@ -225,15 +229,26 @@ void interactive_world_parser::parse_json_placement(Json::Value &placement, inte
     interactive_world_msgs::Room &room = config.rooms[i];
     if (room.name.compare(room_name) == 0)
     {
+      room_msg = config.rooms[i];
       for (uint j = 0; j < room.surfaces.size(); j++)
       {
         interactive_world_msgs::Surface &surface = room.surfaces[j];
         if (surface.name.compare(surface_name) == 0)
         {
+          surface_msg = room.surfaces[j];
           pois = surface.pois;
           break;
         }
       }
+      break;
+    }
+  }
+  for (uint i = 0; i < config.items.size(); i++)
+  {
+    interactive_world_msgs::Item &item = config.items[i];
+    if (item.name.compare(object_name) == 0)
+    {
+      item_msg = config.items[i];
       break;
     }
   }
@@ -252,8 +267,7 @@ void interactive_world_parser::parse_json_placement(Json::Value &placement, inte
   tf2::Transform t_room_object = t_room_surface * t_surface_psurface * t_psurface_object;
 
   // store the placement on the surface
-  string key = room_name + "+" + surface_name + "+" + object_name;
-  data_[condition_id][key].push_back(t_surface_object);
+  add_placement_to_data(condition_id, t_surface_object, item_msg, room_msg, surface_msg, surface_name);
 
   // check for POIs
   vector<string> used_names;
@@ -284,12 +298,11 @@ void interactive_world_parser::parse_json_placement(Json::Value &placement, inte
       // convert to POI frame
       tf2::Transform t_poi_object = closest_t.inverseTimes(t_surface_object);
       // store the value
-      string key = room_name + "+" + surface_name + "+" + cur_poi_name + "+" + object_name;
-      data_[condition_id][key].push_back(t_poi_object);
+      add_placement_to_data(condition_id, t_poi_object, item_msg, room_msg, surface_msg, cur_poi_name);
     }
   }
 
-  // place next to each closest object
+  // place next to each closest item
   for (int i = 0; i < config.items.size(); i++)
   {
     interactive_world_msgs::Item &item = config.items[i];
@@ -318,9 +331,27 @@ void interactive_world_parser::parse_json_placement(Json::Value &placement, inte
           // only compare on the same furniture
           if (json["name"].asString().compare(room_name) == 0 && json_furniture2["name"].asString().compare(surface_name) == 0 && json_object2["name"].asString().compare(item.name) == 0)
           {
-
+            // convert to the surface frame
+            tf2::Transform t_surface_psurface2 = parse_json_tf(json_furniture_surface_position2, json_furniture_surface2["rotation"].asDouble());
+            tf2::Transform t_psurface_object2 = parse_json_tf(json_object_position2, json_object2["rotation"].asDouble());
+            tf2::Transform t_surface_object2 = t_surface_psurface2 * t_psurface_object2;
+            // compute the distance
+            double distance = t_surface_object.getOrigin().distance(t_surface_object2.getOrigin());
+            if (distance < closest_dist)
+            {
+              closest_dist = distance;
+              closest_t = t_surface_object2;
+            }
           }
         }
+      }
+      // check if we found a closest match
+      if (closest_dist < numeric_limits<double>::infinity())
+      {
+        // convert to object2 frame
+        tf2::Transform t_object2_object = closest_t.inverseTimes(t_surface_object);
+        // store the value
+        add_placement_to_data(condition_id, t_object2_object, item_msg, room_msg, surface_msg, item.name);
       }
     }
   }
@@ -357,6 +388,47 @@ geometry_msgs::Pose interactive_world_parser::parse_json_pose(Json::Value &posit
   p.orientation.w = q.w();
 
   return p;
+}
+
+void interactive_world_parser::add_placement_to_data(uint condition_id, tf2::Transform &tf, interactive_world_msgs::Item item, interactive_world_msgs::Room room, interactive_world_msgs::Surface surface, string reference_frame_id)
+{
+  if (data_.find(condition_id) == data_.end())
+  {
+    data_[condition_id] = interactive_world_msgs::TaskTrainingData();
+  }
+
+  interactive_world_msgs::TaskTrainingData &training = data_[condition_id];
+
+  // create the placement
+  interactive_world_msgs::Placement placement;
+  placement.item = item;
+  placement.room = room;
+  placement.surface = surface;
+  placement.reference_frame_id = reference_frame_id;
+  placement.rotation = tf.getRotation().getAngle();
+  placement.position.x = tf.getOrigin().x();
+  placement.position.y = tf.getOrigin().y();
+  placement.position.z = tf.getOrigin().z();
+
+  // search for the correct frame
+  for (uint i = 0; i < training.data.size(); i++)
+  {
+    interactive_world_msgs::PlacementSet &placements = training.data[i];
+    if (placements.item.name.compare(item.name) == 0 && placements.room.name.compare(room.name) == 0 && placements.surface.name.compare(surface.name) == 0 && placements.reference_frame_id.compare(reference_frame_id) == 0)
+    {
+      placements.placements.push_back(placement);
+      return;
+    }
+  }
+
+  // new entry
+  interactive_world_msgs::PlacementSet set;
+  set.reference_frame_id = reference_frame_id;
+  set.item = item;
+  set.room = room;
+  set.surface = surface;
+  set.placements.push_back(placement);
+  training.data.push_back(set);
 }
 
 int main(int argc, char **argv)
