@@ -71,7 +71,7 @@ public class InteractiveWorldLearner {
 
 				// create the clustering model
 				EMModel em = new EMModel(ds);
-				models[i] = new Model(em.getPlacementLocation(), em.getDecisionValue(), 0, 0, 0, 0);
+				models[i] = new Model(em);
 			}
 
 			System.out.println("Model learning done, returning result.");

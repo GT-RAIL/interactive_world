@@ -24,7 +24,7 @@ public class EMModel implements Model {
 
 	private EM em;
 	private Placement best;
-	private double min;
+	private double decisionValue, sigmaX, sigmaY, sigmaZ, sigmaTheta;
 	private DataSet data;
 
 	/**
@@ -124,7 +124,11 @@ public class EMModel implements Model {
 		try {
 			this.em = new EM();
 			this.best = null;
-			this.min = Double.POSITIVE_INFINITY;
+			this.decisionValue = Double.POSITIVE_INFINITY;
+			this.sigmaX = 0;
+			this.sigmaY = 0;
+			this.sigmaZ = 0;
+			this.sigmaTheta = 0;
 
 			// get the instances
 			Instances instances = this.data.toInstances();
@@ -179,13 +183,16 @@ public class EMModel implements Model {
 						/ (((double) curInsts.size()) / ((double) this.size()));
 
 				// check for a new best
-				if (density < this.min) {
-					this.min = density;
-
+				if (density < this.decisionValue) {
+					this.decisionValue = density;
 					double x = clusterData[m][0][0];
+					this.sigmaX = clusterData[m][0][1];
 					double y = clusterData[m][1][0];
+					this.sigmaY = clusterData[m][1][1];
 					double z = 0.0;
+					this.sigmaZ = 0.0;
 					double theta = clusterData[m][2][0];
+					this.sigmaTheta = clusterData[m][2][1];
 					this.best = new Placement(this.getItem(), this.getRoom(), this.getSurface(), this.getReferenceFrame(), new Point(x, y, z), theta);
 				}
 			}
@@ -210,11 +217,51 @@ public class EMModel implements Model {
 	/**
 	 * Get the value that the was the result of the placement decision. Smaller
 	 * values are better in this model.
-	 * 
+	 *
 	 * @return The value that the was the result of the placement decision.
 	 */
 	@Override
 	public double getDecisionValue() {
-		return this.min;
+		return this.decisionValue;
+	}
+
+	/**
+	 * Get the standard deviation of the X.
+	 *
+	 * @return The standard deviation of the X.
+	 */
+	@Override
+	public double getSigmaX() {
+		return this.sigmaX;
+	}
+
+	/**
+	 * Get the standard deviation of the Y.
+	 *
+	 * @return The standard deviation of the Y.
+	 */
+	@Override
+	public double getSigmaY() {
+		return this.sigmaY;
+	}
+
+	/**
+	 * Get the standard deviation of the Z.
+	 *
+	 * @return The standard deviation of the Z.
+	 */
+	@Override
+	public double getSigmaZ() {
+		return this.sigmaZ;
+	}
+
+	/**
+	 * Get the standard deviation of the theta.
+	 *
+	 * @return The standard deviation of the theta.
+	 */
+	@Override
+	public double getSigmaTheta() {
+		return this.sigmaTheta;
 	}
 }

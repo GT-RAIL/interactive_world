@@ -83,4 +83,32 @@ public interface Model {
 	 * @return The value that the was the result of the placement decision.
 	 */
 	public double getDecisionValue();
+
+	/**
+	 * Get the standard deviation of the X.
+	 *
+	 * @return The standard deviation of the X.
+	 */
+	public double getSigmaX();
+
+	/**
+	 * Get the standard deviation of the Y.
+	 *
+	 * @return The standard deviation of the Y.
+	 */
+	public double getSigmaY();
+
+	/**
+	 * Get the standard deviation of the Z.
+	 *
+	 * @return The standard deviation of the Z.
+	 */
+	public double getSigmaZ();
+
+	/**
+	 * Get the standard deviation of the theta.
+	 *
+	 * @return The standard deviation of the theta.
+	 */
+	public double getSigmaTheta();
 }

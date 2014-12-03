@@ -59,6 +59,16 @@ public class Model extends Message {
 	}
 
 	/**
+	 * Create a new Model message from an interactive world model.
+	 *
+	 * @param model
+	 *            The model.
+	 */
+	public Model(edu.wpi.rail.jinteractiveworld.model.Model model) {
+		this(model.getPlacementLocation(), model.getDecisionValue(), model.getSigmaX(), model.getSigmaY(), model.getSigmaZ(), model.getSigmaTheta());
+	}
+
+	/**
 	 * Create a new Model message with the given information.
 	 * 
 	 * @param placement
