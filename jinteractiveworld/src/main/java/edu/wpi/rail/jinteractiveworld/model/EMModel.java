@@ -1,16 +1,13 @@
 package edu.wpi.rail.jinteractiveworld.model;
 
-import edu.wpi.rail.jinteractiveworld.data.DataPoint;
-import edu.wpi.rail.jinteractiveworld.data.DataSet;
-import edu.wpi.rail.jinteractiveworld.model.Model;
+import edu.wpi.rail.jinteractiveworld.data.*;
 import edu.wpi.rail.jinteractiveworld.ros.msgs.interactiveworldmsgs.*;
 import edu.wpi.rail.jrosbridge.messages.geometry.Point;
 import weka.clusterers.EM;
-import weka.core.Instance;
+import weka.core.*;
 import weka.core.Instances;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.Remove;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,10 +26,6 @@ public class EMModel implements Model {
 	private Placement best;
 	private double min;
 	private DataSet data;
-	private String referenceFrame;
-	private Item item;
-	private Room room;
-	private Surface surface;
 
 	/**
 	 * Create a clustering model based on the given data set. This model will be
@@ -40,21 +33,9 @@ public class EMModel implements Model {
 	 *
 	 * @param data
 	 *            The data set for the model.
-	 * @param item
-	 *            The item for this model.
-	 * @param room
-	 *            The target room for this model.
-	 * @param surface
-	 *            The target surface for this model.
-	 * @param referenceFrame
-	 *            The reference frame for this model.
 	 */
-	public EMModel(DataSet data, Item item, Room room, Surface surface, String referenceFrame) {
+	public EMModel(DataSet data) {
 		this.data = data;
-		this.item = item;
-		this.room = room;
-		this.surface = surface;
-		this.referenceFrame = referenceFrame;
 		this.train();
 	}
 
@@ -102,7 +83,7 @@ public class EMModel implements Model {
 	 */
 	@Override
 	public String getReferenceFrame() {
-		return this.referenceFrame;
+		return this.data.getReferenceFrame();
 	}
 
 	/**
@@ -112,7 +93,7 @@ public class EMModel implements Model {
 	 */
 	@Override
 	public Item getItem() {
-		return this.item;
+		return this.data.getItem();
 	}
 
 	/**
@@ -122,7 +103,7 @@ public class EMModel implements Model {
 	 */
 	@Override
 	public Room getRoom() {
-		return this.room;
+		return this.data.getRoom();
 	}
 
 	/**
@@ -132,7 +113,7 @@ public class EMModel implements Model {
 	 */
 	@Override
 	public Surface getSurface() {
-		return this.surface;
+		return this.data.getSurface();
 	}
 
 	/**
@@ -205,7 +186,7 @@ public class EMModel implements Model {
 					double y = clusterData[m][1][0];
 					double z = 0.0;
 					double theta = clusterData[m][2][0];
-					this.best = new Placement(this.item, this.room, this.surface, this.referenceFrame, new Point(x, y, z), theta);
+					this.best = new Placement(this.getItem(), this.getRoom(), this.getSurface(), this.getReferenceFrame(), new Point(x, y, z), theta);
 				}
 			}
 		} catch (Exception e) {

@@ -57,6 +57,10 @@ public class LearnModels {
             this.data = data;
         }
 
+        public TaskTrainingData getData() {
+            return this.data;
+        }
+
         /**
          * Create a clone of this LearnModels ServiceRequest.
          */
@@ -142,6 +146,10 @@ public class LearnModels {
         public Response(TaskModels models, boolean result) {
             super(Json.createObjectBuilder().add(Response.FIELD_MODELS, models.toJsonObject()).build(), LearnModels.TYPE, result);
             this.models = models;
+        }
+
+        public TaskModels getModels() {
+            return this.models;
         }
 
         /**

@@ -1,7 +1,6 @@
 package edu.wpi.rail.jinteractiveworld.model;
 
 import java.util.List;
-
 import edu.wpi.rail.jinteractiveworld.data.DataPoint;
 import edu.wpi.rail.jinteractiveworld.ros.msgs.interactiveworldmsgs.*;
 

@@ -1,7 +1,6 @@
 package edu.wpi.rail.jinteractiveworld.ros.msgs.interactiveworldmsgs;
 
 import edu.wpi.rail.jrosbridge.messages.Message;
-
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
@@ -54,7 +53,7 @@ public class TaskTrainingData extends Message {
 	 *
 	 * @return The data value of this TaskTrainingData.
 	 */
-	public PlacementSet[] getDate() {
+	public PlacementSet[] getData() {
 		return this.data;
 	}
 

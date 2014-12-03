@@ -11,13 +11,13 @@ public class TestEMModel {
 	
 	@Test
 	public void testInvalidDataSet() {
-		EMModel model = new EMModel(null, null, null, null, "");
+		EMModel model = new EMModel(null);
 		assertNull(model.getPlacementLocation());
 	}
 
 	@Test
 	public void testGetHighestPlacementLocation() {		
-		DataSet data = new DataSet();
+		DataSet data = new DataSet(new Item(), new Room(), new Surface(), "test");
 
 		data.add(1, 1, 0, Math.PI);
 		data.add(0.5, 0.5, 0, Math.PI / 2.0);
@@ -31,7 +31,7 @@ public class TestEMModel {
 		data.add(-5.125, -4.875, 0, Math.PI / 2.0);
 		data.add(-5.125, -5.125, 0, Math.PI);
 
-		EMModel model = new EMModel(data, new Item(), new Room(), new Surface(), "test");
+		EMModel model = new EMModel(data);
 
 		Placement p = model.getPlacementLocation();
 		assertEquals("test", p.getReferenceFrameId());

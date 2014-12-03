@@ -18,24 +18,6 @@ public class TestDataSet {
 	public void testConstructor() {
 		DataSet ds = new DataSet();
 		assertEquals(0, ds.size());
-		assertEquals("", ds.getName());
-	}
-
-	@Test
-	public void testNameConstructor() {
-		String name = "test";
-		DataSet ds = new DataSet(name);
-		assertEquals(0, ds.size());
-		assertEquals(name, ds.getName());
-	}
-
-	@Test
-	public void testSetName() {
-		String name1 = "test1";
-		DataSet ds = new DataSet(name1);
-		String name2 = "test2";
-		ds.setName(name2);
-		assertEquals(name2, ds.getName());
 	}
 
 	@Test

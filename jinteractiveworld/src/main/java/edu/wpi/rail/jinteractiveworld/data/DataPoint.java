@@ -1,6 +1,5 @@
 package edu.wpi.rail.jinteractiveworld.data;
 
-
 /**
  * A DataPoint contains a position and rotation.
  *

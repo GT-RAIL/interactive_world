@@ -1,15 +1,9 @@
 package edu.wpi.rail.jinteractiveworld.data;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 
-import weka.core.Attribute;
-import weka.core.FastVector;
-import weka.core.Instance;
-import weka.core.Instances;
+import edu.wpi.rail.jinteractiveworld.ros.msgs.interactiveworldmsgs.*;
+import weka.core.*;
 
 /**
  * A DataSet contains a collection of transformation matrices. Rotations occur
@@ -46,43 +40,71 @@ public class DataSet {
 	public static final Attribute THETA_ATTRIBUTE = new Attribute("theta");
 
 	private ArrayList<DataPoint> data;
-	private String name;
-
+	private Item item;
+	private Room room;
+	private Surface surface;
+	private String referenceFrame;
 	/**
-	 * Create a new, empty data set and empty name.
+	 * Create a new, empty data set.
 	 */
 	public DataSet() {
-		this("");
+		this(new Item(), new Room(), new Surface(), "");
 	}
 
 	/**
-	 * Create a new, empty data set with the given name.
-	 * 
-	 * @param name
-	 *            The name of the data set.
+	 * Create a new, empty data set.
+	 *
+	 * @param item
+	 *            The item for this data set.
+	 * @param room
+	 *            The target room for this data set.
+	 * @param surface
+	 *            The target surface for this data set.
+	 * @param referenceFrame
+	 *            The reference frame for this data set.
 	 */
-	public DataSet(String name) {
+	public DataSet(Item item, Room room, Surface surface, String referenceFrame) {
+		this.item = item;
+		this.room = room;
+		this.surface = surface;
+		this.referenceFrame = referenceFrame;
 		this.data = new ArrayList<DataPoint>();
-		this.name = name;
 	}
 
 	/**
-	 * Get the name of the data set.
-	 * 
-	 * @return The name of the data set.
+	 * Get the reference frame for this model.
+	 *
+	 * @return The reference frame for this model.
 	 */
-	public String getName() {
-		return this.name;
+	public String getReferenceFrame() {
+		return this.referenceFrame;
 	}
 
 	/**
-	 * Set the name of the data set.
-	 * 
-	 * @param name
-	 *            The name of the data set.
+	 * Get the target item for this model.
+	 *
+	 * @return The target item for this model.
 	 */
-	public void setName(String name) {
-		this.name = name;
+	public Item getItem() {
+		return this.item;
+	}
+
+	/**
+	 * Get the target room for this model.
+	 *
+	 * @return The target room for this model.
+	 */
+	public Room getRoom() {
+		return this.room;
+	}
+
+	/**
+	 * Get the target surface for this model.
+	 *
+	 * @return The target surface for this model.
+	 */
+	public Surface getSurface() {
+		return this.surface;
 	}
 
 	/**

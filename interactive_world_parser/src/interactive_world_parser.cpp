@@ -46,6 +46,12 @@ interactive_world_parser::~interactive_world_parser()
   delete client_;
 }
 
+static int __limit__ = 0;
+static bool cond(const interactive_world_msgs::PlacementSet &set)
+{
+  return set.placements.size() < __limit__;
+}
+
 bool interactive_world_parser::parse_cb(std_srvs::Empty::Request &req, std_srvs::Empty::Response &resp)
 {
   ROS_INFO("=== BEGINING PARSE ===");
@@ -107,6 +113,10 @@ bool interactive_world_parser::parse_cb(std_srvs::Empty::Request &req, std_srvs:
       }
     }
     ROS_INFO("++ %d/%d completed sessions with %d placements.", num_completed, num_experiments, num_placements);
+    __limit__ = num_placements * 0.05;
+    ROS_INFO("++ Removing data sets with less than %d placements...", __limit__);
+    vector<interactive_world_msgs::PlacementSet> &v = data_[condition.get_id()].data;
+    v.erase(remove_if(v.begin(), v.end(), cond), v.end());
   }
 
   ROS_INFO("=== PARSE FINISHED ===");
