@@ -30,7 +30,7 @@ public class CupNode extends PNode {
 	public CupNode() {
 		super();
 
-		// get the size from the Object
+		// get the size from the Item
 		Cup c = new Cup();
 		double w = c.getWidth() * StateFrame.PIXELS_PER_METER;
 		double h = c.getHeight() * StateFrame.PIXELS_PER_METER;

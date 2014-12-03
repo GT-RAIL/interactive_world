@@ -30,7 +30,7 @@ public class ForkNode extends PNode {
 	public ForkNode() {
 		super();
 
-		// get the size from the Object
+		// get the size from the Item
 		Fork f = new Fork();
 		double w = f.getWidth() * StateFrame.PIXELS_PER_METER;
 		double h = f.getHeight() * StateFrame.PIXELS_PER_METER;

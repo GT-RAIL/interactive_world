@@ -312,12 +312,12 @@ public class RotationMatrix {
 	}
 
 	/**
-	 * Check if the given Object is the same as the rotation matrix. Two
+	 * Check if the given Item is the same as the rotation matrix. Two
 	 * rotation matrices are the same if all components of the matrix are equal.
 	 * 
 	 * @param o
-	 *            The Object to check.
-	 * @return If the Object is equal to this RotationMatrix.
+	 *            The Item to check.
+	 * @return If the Item is equal to this RotationMatrix.
 	 */
 	@Override
 	public boolean equals(Object o) {

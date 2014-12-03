@@ -1,0 +1,3 @@
+interactive_world_msgs/TaskTrainingData data    # the data to train on
+---
+interactive_world_msgs/TaskModels models      # the resulting models

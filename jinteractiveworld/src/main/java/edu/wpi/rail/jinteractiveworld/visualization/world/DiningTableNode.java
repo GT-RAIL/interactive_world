@@ -30,7 +30,7 @@ public class DiningTableNode extends PNode {
 	public DiningTableNode() {
 		super();
 
-		// get the size from the Object
+		// get the size from the Item
 		DiningTable t = new DiningTable();
 		double w = t.getWidth() * StateFrame.PIXELS_PER_METER;
 		double h = t.getHeight() * StateFrame.PIXELS_PER_METER;

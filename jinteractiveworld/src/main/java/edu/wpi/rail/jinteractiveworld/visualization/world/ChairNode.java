@@ -30,7 +30,7 @@ public class ChairNode extends PNode {
 	public ChairNode() {
 		super();
 
-		// get the size from the Object
+		// get the size from the Item
 		Chair c = new Chair();
 		double w = c.getWidth() * StateFrame.PIXELS_PER_METER;
 		double h = c.getHeight() * StateFrame.PIXELS_PER_METER;

@@ -30,7 +30,7 @@ public class CounterNode extends PNode {
 	public CounterNode() {
 		super();
 
-		// get the size from the Object
+		// get the size from the Item
 		Counter c = new Counter();
 		double w = c.getWidth() * StateFrame.PIXELS_PER_METER;
 		double h = c.getHeight() * StateFrame.PIXELS_PER_METER;

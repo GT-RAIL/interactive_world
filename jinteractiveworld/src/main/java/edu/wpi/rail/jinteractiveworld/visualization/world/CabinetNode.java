@@ -30,7 +30,7 @@ public class CabinetNode extends PNode {
 	public CabinetNode() {
 		super();
 
-		// get the size from the Object
+		// get the size from the Item
 		Cabinet c = new Cabinet();
 		double w = c.getWidth() * StateFrame.PIXELS_PER_METER;
 		double h = c.getHeight() * StateFrame.PIXELS_PER_METER;

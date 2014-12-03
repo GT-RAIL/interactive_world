@@ -28,10 +28,12 @@ interactive_world_parser::interactive_world_parser() :
   // setup servers
   parse_ = private_.advertiseService("parse", &interactive_world_parser::parse_cb, this);
   save_files_ = private_.advertiseService("save_files", &interactive_world_parser::save_files_cb, this);
+  learn_models_ = private_.advertiseService("learn_models", &interactive_world_parser::learn_models_cb, this);
   parse_and_save_files_ = private_.advertiseService("parse_and_save_files", &interactive_world_parser::parse_and_save_files_cb, this);
+  parse_and_learn_models_ = private_.advertiseService("parse_and_learn_models", &interactive_world_parser::parse_and_learn_models_cb, this);
 
   // wait for external service
-  learn_hypotheses_ = private_.serviceClient<std_srvs::Empty>("/interactive_world_learner/learn_hypotheses");
+  learn_hypotheses_ = private_.serviceClient<interactive_world_msgs::LearnModels>("/interactive_world_learner/learn_hypotheses");
   ROS_INFO("Waiting for /interactive_world_learner/learn_hypotheses...");
   learn_hypotheses_.waitForExistence(ros::DURATION_MAX);
 
@@ -140,10 +142,36 @@ bool interactive_world_parser::save_files_cb(std_srvs::Empty::Request &req, std_
   return true;
 }
 
+bool interactive_world_parser::learn_models_cb(std_srvs::Empty::Request &req, std_srvs::Empty::Response &resp)
+{
+  ROS_INFO("=== BEGINING MODEL LEARNING ===");
+  // save the data
+  for (map<uint, interactive_world_msgs::TaskTrainingData>::iterator it = data_.begin(); it != data_.end(); ++it)
+  {
+    uint condition_id = it->first;
+    interactive_world_msgs::TaskTrainingData &training = it->second;
+    ROS_INFO("Sending condition %d data off to jinteractiveworld...", condition_id);
+    // construct the message
+    interactive_world_msgs::LearnModels srv;
+    srv.request.data = it->second;
+    learn_hypotheses_.call(srv);
+    ROS_INFO("Condition %d models learned.", condition_id);
+  }
+  ROS_INFO("=== MODEL LEARNING FINISHED ===");
+
+  return true;
+}
+
 
 bool interactive_world_parser::parse_and_save_files_cb(std_srvs::Empty::Request &req, std_srvs::Empty::Response &resp)
 {
   return this->parse_cb(req, resp) && this->save_files_cb(req, resp);
+}
+
+
+bool interactive_world_parser::parse_and_learn_models_cb(std_srvs::Empty::Request &req, std_srvs::Empty::Response &resp)
+{
+  return this->parse_cb(req, resp) && this->learn_models_cb(req, resp);
 }
 
 

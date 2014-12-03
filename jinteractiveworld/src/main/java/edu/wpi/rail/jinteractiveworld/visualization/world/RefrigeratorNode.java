@@ -30,7 +30,7 @@ public class RefrigeratorNode extends PNode {
 	public RefrigeratorNode() {
 		super();
 
-		// get the size from the Object
+		// get the size from the Item
 		Refrigerator r = new Refrigerator();
 		double w = r.getWidth() * StateFrame.PIXELS_PER_METER;
 		double h = r.getHeight() * StateFrame.PIXELS_PER_METER;

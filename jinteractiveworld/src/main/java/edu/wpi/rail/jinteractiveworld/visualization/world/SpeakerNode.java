@@ -30,7 +30,7 @@ public class SpeakerNode extends PNode {
 	public SpeakerNode() {
 		super();
 
-		// get the size from the Object
+		// get the size from the Item
 		Speaker s = new Speaker();
 		double w = s.getWidth() * StateFrame.PIXELS_PER_METER;
 		double h = s.getHeight() * StateFrame.PIXELS_PER_METER;

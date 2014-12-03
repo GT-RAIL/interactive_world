@@ -30,7 +30,7 @@ public class DresserNode extends PNode {
 	public DresserNode() {
 		super();
 
-		// get the size from the Object
+		// get the size from the Item
 		Dresser d = new Dresser();
 		double w = d.getWidth() * StateFrame.PIXELS_PER_METER;
 		double h = d.getHeight() * StateFrame.PIXELS_PER_METER;

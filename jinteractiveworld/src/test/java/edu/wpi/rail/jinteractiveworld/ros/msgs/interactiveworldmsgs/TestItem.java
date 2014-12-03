@@ -11,15 +11,15 @@ import org.junit.Test;
 import edu.wpi.rail.jinteractiveworld.world.Bed;
 import edu.wpi.rail.jrosbridge.messages.Message;
 
-public class TestObject {
+public class TestItem {
 
-	private Object empty, o1, o2;
+	private Item empty, o1, o2;
 
 	@Before
 	public void setUp() {
-		empty = new Object();
-		o1 = new Object("name", 1.5, 3.0);
-		o2 = new Object(new Bed());
+		empty = new Item();
+		o1 = new Item("name", 1.5, 3.0);
+		o2 = new Item(new Bed());
 	}
 
 	@Test
@@ -32,13 +32,13 @@ public class TestObject {
 				empty.toString());
 
 		assertEquals(3, empty.toJsonObject().size());
-		assertEquals("", empty.toJsonObject().getString(Object.FIELD_NAME));
-		assertEquals(0.0, empty.toJsonObject().getJsonNumber(Object.FIELD_WIDTH)
+		assertEquals("", empty.toJsonObject().getString(Item.FIELD_NAME));
+		assertEquals(0.0, empty.toJsonObject().getJsonNumber(Item.FIELD_WIDTH)
 				.doubleValue(), 0);
-		assertEquals(0.0, empty.toJsonObject().getJsonNumber(Object.FIELD_HEIGHT)
+		assertEquals(0.0, empty.toJsonObject().getJsonNumber(Item.FIELD_HEIGHT)
 				.doubleValue(), 0);
 
-		assertEquals(Object.TYPE, empty.getMessageType());
+		assertEquals(Item.TYPE, empty.getMessageType());
 	}
 
 	@Test
@@ -51,13 +51,13 @@ public class TestObject {
 				o1.toString());
 
 		assertEquals(3, o1.toJsonObject().size());
-		assertEquals("name", o1.toJsonObject().getString(Object.FIELD_NAME));
-		assertEquals(1.5, o1.toJsonObject().getJsonNumber(Object.FIELD_WIDTH)
+		assertEquals("name", o1.toJsonObject().getString(Item.FIELD_NAME));
+		assertEquals(1.5, o1.toJsonObject().getJsonNumber(Item.FIELD_WIDTH)
 				.doubleValue(), 0);
-		assertEquals(3.0, o1.toJsonObject().getJsonNumber(Object.FIELD_HEIGHT)
+		assertEquals(3.0, o1.toJsonObject().getJsonNumber(Item.FIELD_HEIGHT)
 				.doubleValue(), 0);
 
-		assertEquals(Object.TYPE, o1.getMessageType());
+		assertEquals(Item.TYPE, o1.getMessageType());
 	}
 
 	@Test
@@ -72,15 +72,15 @@ public class TestObject {
 
 		assertEquals(3, o2.toJsonObject().size());
 		assertEquals(b.getName(), o2.toJsonObject()
-				.getString(Object.FIELD_NAME));
+				.getString(Item.FIELD_NAME));
 		assertEquals(b.getWidth(),
-				o2.toJsonObject().getJsonNumber(Object.FIELD_WIDTH)
+				o2.toJsonObject().getJsonNumber(Item.FIELD_WIDTH)
 						.doubleValue(), 0);
 		assertEquals(b.getHeight(),
-				o2.toJsonObject().getJsonNumber(Object.FIELD_HEIGHT)
+				o2.toJsonObject().getJsonNumber(Item.FIELD_HEIGHT)
 						.doubleValue(), 0);
 
-		assertEquals(Object.TYPE, o2.getMessageType());
+		assertEquals(Item.TYPE, o2.getMessageType());
 	}
 
 	@Test
@@ -117,7 +117,7 @@ public class TestObject {
 
 	@Test
 	public void testClone() {
-		Object clone = o1.clone();
+		Item clone = o1.clone();
 		assertEquals(o1.toString(), clone.toString());
 		assertEquals(o1.toJsonObject(), clone.toJsonObject());
 		assertEquals(o1.getMessageType(), clone.getMessageType());
@@ -131,7 +131,7 @@ public class TestObject {
 
 	@Test
 	public void testFromJsonString() {
-		Object p = Object.fromJsonString(o1.toString());
+		Item p = Item.fromJsonString(o1.toString());
 		assertEquals(o1.toString(), p.toString());
 		assertEquals(o1.toJsonObject(), p.toJsonObject());
 		assertEquals(o1.getMessageType(), p.getMessageType());
@@ -146,7 +146,7 @@ public class TestObject {
 	@Test
 	public void testFromMessage() {
 		Message m = new Message(o1.toString());
-		Object p = Object.fromMessage(m);
+		Item p = Item.fromMessage(m);
 		assertEquals(o1.toString(), p.toString());
 		assertEquals(o1.toJsonObject(), p.toJsonObject());
 		assertEquals(o1.getMessageType(), p.getMessageType());
@@ -161,10 +161,10 @@ public class TestObject {
 	@Test
 	public void testFromJsonObject() {
 		JsonObject jsonObject = Json.createObjectBuilder()
-				.add(Object.FIELD_NAME, o1.getName())
-				.add(Object.FIELD_WIDTH, o1.getWidth())
-				.add(Object.FIELD_HEIGHT, o1.getHeight()).build();
-		Object p = Object.fromJsonObject(jsonObject);
+				.add(Item.FIELD_NAME, o1.getName())
+				.add(Item.FIELD_WIDTH, o1.getWidth())
+				.add(Item.FIELD_HEIGHT, o1.getHeight()).build();
+		Item p = Item.fromJsonObject(jsonObject);
 		assertEquals(o1.toString(), p.toString());
 		assertEquals(o1.toJsonObject(), p.toJsonObject());
 		assertEquals(o1.getMessageType(), p.getMessageType());
@@ -179,9 +179,9 @@ public class TestObject {
 	@Test
 	public void testFromJsonObjectNoName() {
 		JsonObject jsonObject = Json.createObjectBuilder()
-				.add(Object.FIELD_WIDTH, o1.getWidth())
-				.add(Object.FIELD_HEIGHT, o1.getHeight()).build();
-		Object p = Object.fromJsonObject(jsonObject);
+				.add(Item.FIELD_WIDTH, o1.getWidth())
+				.add(Item.FIELD_HEIGHT, o1.getHeight()).build();
+		Item p = Item.fromJsonObject(jsonObject);
 		assertEquals("", p.getName());
 		assertEquals(o1.getWidth(), p.getWidth(), 0);
 		assertEquals(o1.getHeight(), p.getHeight(), 0);
@@ -190,9 +190,9 @@ public class TestObject {
 	@Test
 	public void testFromJsonObjectNoWidth() {
 		JsonObject jsonObject = Json.createObjectBuilder()
-				.add(Object.FIELD_NAME, o1.getName())
-				.add(Object.FIELD_HEIGHT, o1.getHeight()).build();
-		Object p = Object.fromJsonObject(jsonObject);
+				.add(Item.FIELD_NAME, o1.getName())
+				.add(Item.FIELD_HEIGHT, o1.getHeight()).build();
+		Item p = Item.fromJsonObject(jsonObject);
 		assertEquals(o1.getName(), p.getName());
 		assertEquals(0.0, p.getWidth(), 0);
 		assertEquals(o1.getHeight(), p.getHeight(), 0);
@@ -201,9 +201,9 @@ public class TestObject {
 	@Test
 	public void testFromJsonObjectNoHeight() {
 		JsonObject jsonObject = Json.createObjectBuilder()
-				.add(Object.FIELD_NAME, o1.getName())
-				.add(Object.FIELD_WIDTH, o1.getWidth()).build();
-		Object p = Object.fromJsonObject(jsonObject);
+				.add(Item.FIELD_NAME, o1.getName())
+				.add(Item.FIELD_WIDTH, o1.getWidth()).build();
+		Item p = Item.fromJsonObject(jsonObject);
 		assertEquals(o1.getName(), p.getName());
 		assertEquals(o1.getWidth(), p.getWidth(), 0);
 		assertEquals(0.0, p.getHeight(), 0);

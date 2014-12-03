@@ -30,7 +30,7 @@ public class CouchNode extends PNode {
 	public CouchNode() {
 		super();
 
-		// get the size from the Object
+		// get the size from the Item
 		Couch c = new Couch();
 		double w = c.getWidth() * StateFrame.PIXELS_PER_METER;
 		double h = c.getHeight() * StateFrame.PIXELS_PER_METER;

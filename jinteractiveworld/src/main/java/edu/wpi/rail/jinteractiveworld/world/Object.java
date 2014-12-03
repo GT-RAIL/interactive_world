@@ -1,7 +1,7 @@
 package edu.wpi.rail.jinteractiveworld.world;
 
 /**
- * An Object represents an entity in the world, such as a table or a spoon.
+ * An Item represents an entity in the world, such as a table or a spoon.
  * Objects have an associated name which should be unique.
  * 
  * @author Russell Toris -- rctoris@wpi.edu
@@ -14,15 +14,15 @@ public abstract class Object {
 	private double height;
 
 	/**
-	 * Create an Object with the given name and bounding box dimensions in
+	 * Create an Item with the given name and bounding box dimensions in
 	 * meters.
 	 * 
 	 * @param name
-	 *            The name of the Object.
+	 *            The name of the Item.
 	 * @param width
-	 *            The width the Object.
+	 *            The width the Item.
 	 * @param height
-	 *            The height of the Object.
+	 *            The height of the Item.
 	 */
 	public Object(String name, double width, double height) {
 		this.name = name;
@@ -31,7 +31,7 @@ public abstract class Object {
 	}
 
 	/**
-	 * Get the name of the Object.
+	 * Get the name of the Item.
 	 * 
 	 * @return The name of the object.
 	 */
@@ -40,17 +40,17 @@ public abstract class Object {
 	}
 
 	/**
-	 * Set the name of the Object.
+	 * Set the name of the Item.
 	 * 
 	 * @param name
-	 *            The name of the Object.
+	 *            The name of the Item.
 	 */
 	public void setName(String name) {
 		this.name = name;
 	}
 
 	/**
-	 * Get the width of the Object.
+	 * Get the width of the Item.
 	 * 
 	 * @return The width of the object.
 	 */
@@ -59,17 +59,17 @@ public abstract class Object {
 	}
 
 	/**
-	 * Set the width of the Object.
+	 * Set the width of the Item.
 	 * 
 	 * @param width
-	 *            The width the Object.
+	 *            The width the Item.
 	 */
 	public void setWidth(double width) {
 		this.width = width;
 	}
 
 	/**
-	 * Get the height of the Object.
+	 * Get the height of the Item.
 	 * 
 	 * @return The height of the object.
 	 */
@@ -78,18 +78,18 @@ public abstract class Object {
 	}
 
 	/**
-	 * Set the height of the Object.
+	 * Set the height of the Item.
 	 * 
 	 * @param height
-	 *            The height the Object.
+	 *            The height the Item.
 	 */
 	public void setHeight(double height) {
 		this.height = height;
 	}
 
 	/**
-	 * Get the hash code for this Object which is the same as the hash code for
-	 * the Object's name.
+	 * Get the hash code for this Item which is the same as the hash code for
+	 * the Item's name.
 	 * 
 	 * @return The hash code.
 	 */
@@ -100,13 +100,13 @@ public abstract class Object {
 
 	/**
 	 * Check if the two Objects are the same. Two Objects are the same if they
-	 * are both edu.wpi.rail.jinteractiveworld.world.Object objects and have the
+	 * are both edu.wpi.rail.jinteractiveworld.world.Item objects and have the
 	 * same name.
 	 * 
 	 * @param o
-	 *            The Object to check.
-	 * @return If the Object is equal to this
-	 *         edu.wpi.rail.jinteractiveworld.world.Object.
+	 *            The Item to check.
+	 * @return If the Item is equal to this
+	 *         edu.wpi.rail.jinteractiveworld.world.Item.
 	 */
 	@Override
 	public boolean equals(java.lang.Object o) {

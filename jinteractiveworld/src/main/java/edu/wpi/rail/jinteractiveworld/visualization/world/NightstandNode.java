@@ -30,7 +30,7 @@ public class NightstandNode extends PNode {
 	public NightstandNode() {
 		super();
 
-		// get the size from the Object
+		// get the size from the Item
 		Nightstand n = new Nightstand();
 		double w = n.getWidth() * StateFrame.PIXELS_PER_METER;
 		double h = n.getHeight() * StateFrame.PIXELS_PER_METER;

@@ -30,7 +30,7 @@ public class SpoonNode extends PNode {
 	public SpoonNode() {
 		super();
 
-		// get the size from the Object
+		// get the size from the Item
 		Spoon s = new Spoon();
 		double w = s.getWidth() * StateFrame.PIXELS_PER_METER;
 		double h = s.getHeight() * StateFrame.PIXELS_PER_METER;

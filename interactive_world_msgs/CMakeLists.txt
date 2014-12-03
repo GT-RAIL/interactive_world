@@ -15,12 +15,19 @@ add_message_files(
   FILES
   Configuration.msg
   Item.msg
+  Model.msg
   Placement.msg
   PlacementSet.msg
   PointOfInterest.msg
   Room.msg
   Surface.msg
+  TaskModels.msg
   TaskTrainingData.msg
+)
+
+## Generate services in the 'srv' folder
+add_service_files(FILES
+  LearnModels.srv
 )
 
 ## Generate added messages and services with any dependencies listed here

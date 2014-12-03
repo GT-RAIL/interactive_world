@@ -150,12 +150,12 @@ public class Vector4 {
 	}
 
 	/**
-	 * Check if the given Object is the same as the vector. Two vectors are the
+	 * Check if the given Item is the same as the vector. Two vectors are the
 	 * same if their x, y, and z values are equal.
 	 * 
 	 * @param o
-	 *            The Object to check.
-	 * @return If the Object is equal to this Vector4.
+	 *            The Item to check.
+	 * @return If the Item is equal to this Vector4.
 	 */
 	@Override
 	public boolean equals(Object o) {

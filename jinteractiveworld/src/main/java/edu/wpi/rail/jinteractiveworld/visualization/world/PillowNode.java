@@ -30,7 +30,7 @@ public class PillowNode extends PNode {
 	public PillowNode() {
 		super();
 
-		// get the size from the Object
+		// get the size from the Item
 		Pillow p = new Pillow();
 		double w = p.getWidth() * StateFrame.PIXELS_PER_METER;
 		double h = p.getHeight() * StateFrame.PIXELS_PER_METER;

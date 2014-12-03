@@ -30,7 +30,7 @@ public class CoffeeTableNode extends PNode {
 	public CoffeeTableNode() {
 		super();
 
-		// get the size from the Object
+		// get the size from the Item
 		CoffeeTable c = new CoffeeTable();
 		double w = c.getWidth() * StateFrame.PIXELS_PER_METER;
 		double h = c.getHeight() * StateFrame.PIXELS_PER_METER;

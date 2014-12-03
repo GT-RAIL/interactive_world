@@ -30,7 +30,7 @@ public class MagazinesNode extends PNode {
 	public MagazinesNode() {
 		super();
 
-		// get the size from the Object
+		// get the size from the Item
 		Magazines m = new Magazines();
 		double w = m.getWidth() * StateFrame.PIXELS_PER_METER;
 		double h = m.getHeight() * StateFrame.PIXELS_PER_METER;

@@ -88,8 +88,8 @@ public class Placement {
 	 * Objects and Transforms are equal.
 	 * 
 	 * @param o
-	 *            The java.lang.Object to test.
-	 * @return If the given java.lang.Object is equal to this Placement.
+	 *            The java.lang.Item to test.
+	 * @return If the given java.lang.Item is equal to this Placement.
 	 */
 	@Override
 	public boolean equals(java.lang.Object o) {

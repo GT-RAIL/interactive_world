@@ -30,7 +30,7 @@ public class BurnerNode extends PNode {
 	public BurnerNode() {
 		super();
 
-		// get the size from the Object
+		// get the size from the Item
 		Burner b = new Burner();
 		double w = b.getWidth() * StateFrame.PIXELS_PER_METER;
 		double h = b.getHeight() * StateFrame.PIXELS_PER_METER;

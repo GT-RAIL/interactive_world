@@ -30,7 +30,7 @@ public class OvenNode extends PNode {
 	public OvenNode() {
 		super();
 
-		// get the size from the Object
+		// get the size from the Item
 		Oven o = new Oven();
 		double w = o.getWidth() * StateFrame.PIXELS_PER_METER;
 		double h = o.getHeight() * StateFrame.PIXELS_PER_METER;

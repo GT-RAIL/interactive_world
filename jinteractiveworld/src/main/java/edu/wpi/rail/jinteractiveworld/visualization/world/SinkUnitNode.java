@@ -30,7 +30,7 @@ public class SinkUnitNode extends PNode {
 	public SinkUnitNode() {
 		super();
 
-		// get the size from the Object
+		// get the size from the Item
 		SinkUnit s = new SinkUnit();
 		double w = s.getWidth() * StateFrame.PIXELS_PER_METER;
 		double h = s.getHeight() * StateFrame.PIXELS_PER_METER;

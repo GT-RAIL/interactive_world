@@ -30,7 +30,7 @@ public class BedNode extends PNode {
 	public BedNode() {
 		super();
 
-		// get the size from the Object
+		// get the size from the Item
 		Bed b = new Bed();
 		double w = b.getWidth() * StateFrame.PIXELS_PER_METER;
 		double h = b.getHeight() * StateFrame.PIXELS_PER_METER;

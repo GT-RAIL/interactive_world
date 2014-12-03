@@ -1,96 +1,156 @@
 package edu.wpi.rail.jinteractiveworld.ros.msgs.interactiveworldmsgs;
 
-import javax.json.Json;
-import javax.json.JsonObject;
-
 import edu.wpi.rail.jrosbridge.messages.Message;
 import edu.wpi.rail.jrosbridge.messages.geometry.Point;
 import edu.wpi.rail.jrosbridge.messages.geometry.Pose;
-import edu.wpi.rail.jrosbridge.messages.geometry.Quaternion;
+
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonObject;
+import java.io.StringReader;
+import java.util.Arrays;
 
 /**
  * The interactive_world_msgs/Placement message.
  * 
  * @author Russell Toris -- rctoris@wpi.edu
- * @version August 14, 2014
+ * @version December 2, 2014
  */
 public class Placement extends Message {
 
 	/**
-	 * The name of the object field for the message.
+	 * The name of the item field for the message.
 	 */
-	public static final String FIELD_OBJ = "obj";
+	public static final String FIELD_ITEM = "item";
 
 	/**
-	 * The name of the pose field for the message.
+	 * The name of the room field for the message.
 	 */
-	public static final String FIELD_POSE = "pose";
+	public static final String FIELD_ROOM = "room";
+
+	/**
+	 * The name of the surface field for the message.
+	 */
+	public static final String FIELD_SURFACE = "surface";
+
+	/**
+	 * The name of the reference frame field for the message.
+	 */
+	public static final String FIELD_REFERENCE_FRAME_ID = "reference_frame_id";
+
+	/**
+	 * The name of the position field for the message.
+	 */
+	public static final String FIELD_POSITION = "position";
+
+	/**
+	 * The name of the rotation field for the message.
+	 */
+	public static final String FIELD_ROTATION = "rotation";
 
 	/**
 	 * The message type.
 	 */
 	public static final String TYPE = "interactive_world_msgs/Placement";
 
-	private final Object obj;
-	private final Pose pose;
+	private final Item item;
+	private final Room room;
+	private final Surface surface;
+	private final String referenceFrameId;
+	private final Point position;
+	private final double rotation;
 
 	/**
 	 * Create a new empty Placement message.
 	 */
 	public Placement() {
-		this(new Object(), new Pose());
+		this(new Item(), new Room(), new Surface(), "", new Point(), 0.0);
 	}
 
 	/**
 	 * Create a new Placement message based on the given information.
-	 * 
-	 * @param obj
-	 *            The object in the placement.
-	 * @param pose
-	 *            The pose of the object.
+	 *
+	 * @param item
+	 *            The item of the Placement.
+	 * @param room
+	 *            The room of the Placement.
+	 * @param surface
+	 *            The surface of the Placement.
+	 * @param referenceFrameId
+	 *            The reference frame of the Placement.
+	 * @param position
+	 *            The position frame of the Placement.
+	 * @param rotation
+	 *            The rotation of the Placement.
 	 */
-	public Placement(Object obj, Pose pose) {
+	public Placement(Item item, Room room, Surface surface, String referenceFrameId, Point position, double rotation) {
 		// build the JSON object
-		super(Json.createObjectBuilder()
-				.add(Placement.FIELD_OBJ, obj.toJsonObject())
-				.add(Placement.FIELD_POSE, pose.toJsonObject()).build(),
-				Placement.TYPE);
-		this.obj = obj;
-		this.pose = pose;
+		super(Json.createObjectBuilder().add(Placement.FIELD_ITEM, item.toJsonObject())
+				.add(Placement.FIELD_ROOM, room.toJsonObject())
+				.add(Placement.FIELD_SURFACE, surface.toJsonObject())
+				.add(Placement.FIELD_REFERENCE_FRAME_ID, referenceFrameId)
+				.add(Placement.FIELD_POSITION, position.toJsonObject())
+				.add(Placement.FIELD_ROTATION, rotation).build(), Placement.TYPE);
+		this.item = item;
+		this.room = room;
+		this.surface = surface;
+		this.referenceFrameId = referenceFrameId;
+		this.position = position;
+		this.rotation = rotation;
 	}
 
 	/**
-	 * Create a Placement message based on the JInteractiveWorld placement.
-	 * 
-	 * @param p
-	 *            The JInteractiveWorld to create a placement from.
+	 * Get the item value of this Placement.
+	 *
+	 * @return The item value of this Placement.
 	 */
-	public Placement(edu.wpi.rail.jinteractiveworld.model.Placement p) {
-		this(new Object(p.getObject()), new Pose(new Point(p.getTransform()
-				.getVector3().getX(), p.getTransform().getVector3().getY(), p
-				.getTransform().getVector3().getZ()), new Quaternion(p
-				.getTransform().getRotationMatrix().toVector4().getX(), p
-				.getTransform().getRotationMatrix().toVector4().getY(), p
-				.getTransform().getRotationMatrix().toVector4().getZ(), p
-				.getTransform().getRotationMatrix().toVector4().getW())));
+	public Item getItem() {
+		return this.item;
 	}
 
 	/**
-	 * Get the object value of this object.
-	 * 
-	 * @return The object value of this object.
+	 * Get the room value of this Placement.
+	 *
+	 * @return The room value of this Placement.
 	 */
-	public Object getObj() {
-		return this.obj;
+	public Room getRoom() {
+		return this.room;
 	}
 
 	/**
-	 * Get the pose value of this object.
-	 * 
-	 * @return The pose value of this object.
+	 * Get the surface value of this Placement.
+	 *
+	 * @return The surface value of this Placement.
 	 */
-	public Pose getPose() {
-		return this.pose;
+	public Surface getSurface() {
+		return this.surface;
+	}
+
+	/**
+	 * Get the reference frame value of this Placement.
+	 *
+	 * @return The reference frame value of this Placement.
+	 */
+	public String getReferenceFrameId() {
+		return this.referenceFrameId;
+	}
+
+	/**
+	 * Get the position value of this Placement.
+	 *
+	 * @return The position value of this Placement.
+	 */
+	public Point getPosition() {
+		return this.position;
+	}
+
+	/**
+	 * Get the rotation value of this Placement.
+	 *
+	 * @return The rotation value of this Placement.
+	 */
+	public double getRotation() {
+		return this.rotation;
 	}
 
 	/**
@@ -98,7 +158,7 @@ public class Placement extends Message {
 	 */
 	@Override
 	public Placement clone() {
-		return new Placement(this.obj, this.pose);
+		return new Placement(this.item, this.room, this.surface, this.referenceFrameId, this.position, this.rotation);
 	}
 
 	/**
@@ -131,18 +191,29 @@ public class Placement extends Message {
 	 * Create a new Placement based on the given JSON object. Any missing values
 	 * will be set to their defaults.
 	 * 
-	 * @param jsonPlacement
+	 * @param jsonObject
 	 *            The JSON object to parse.
 	 * @return A Point message based on the given JSON object.
 	 */
 	public static Placement fromJsonObject(JsonObject jsonObject) {
 		// check the fields
-		Object obj = jsonObject.containsKey(Placement.FIELD_OBJ) ? Object
-				.fromJsonObject(jsonObject.getJsonObject(Placement.FIELD_OBJ))
-				: new Object();
-		Pose pose = jsonObject.containsKey(Placement.FIELD_POSE) ? Pose
-				.fromJsonObject(jsonObject.getJsonObject(Placement.FIELD_POSE))
-				: new Pose();
-		return new Placement(obj, pose);
+		Item item = jsonObject.containsKey(Placement.FIELD_ITEM) ? Item
+				.fromJsonObject(jsonObject.getJsonObject(Placement.FIELD_ITEM))
+				: new Item();
+		Room room = jsonObject.containsKey(Placement.FIELD_ROOM) ? Room
+				.fromJsonObject(jsonObject.getJsonObject(Placement.FIELD_ROOM))
+				: new Room();
+		Surface surface = jsonObject.containsKey(Placement.FIELD_SURFACE) ? Surface
+				.fromJsonObject(jsonObject.getJsonObject(Placement.FIELD_SURFACE))
+				: new Surface();
+		String referenceFrameId = jsonObject.containsKey(Placement.FIELD_REFERENCE_FRAME_ID) ? jsonObject
+				.getString(Placement.FIELD_REFERENCE_FRAME_ID) : "";
+		Point position = jsonObject.containsKey(Placement.FIELD_POSITION) ? Point
+				.fromJsonObject(jsonObject.getJsonObject(Placement.FIELD_POSITION))
+				: new Point();
+		double rotation = jsonObject.containsKey(Placement.FIELD_ROTATION) ? jsonObject
+				.getJsonNumber(Placement.FIELD_ROTATION).doubleValue() : 0.0;
+
+		return new Placement(item, room, surface, referenceFrameId, position, rotation);
 	}
 }

@@ -479,12 +479,12 @@ public class Transform {
 	}
 
 	/**
-	 * Check if the given Object is the same as the transform. Two transforms
+	 * Check if the given Item is the same as the transform. Two transforms
 	 * are the same if their rotation and translational components are the same.
 	 * 
 	 * @param o
-	 *            The Object to check.
-	 * @return If the Object is equal to this Transform.
+	 *            The Item to check.
+	 * @return If the Item is equal to this Transform.
 	 */
 	@Override
 	public boolean equals(Object o) {

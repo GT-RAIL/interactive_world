@@ -30,7 +30,7 @@ public class PlateNode extends PNode {
 	public PlateNode() {
 		super();
 
-		// get the size from the Object
+		// get the size from the Item
 		Plate p = new Plate();
 		double w = p.getWidth() * StateFrame.PIXELS_PER_METER;
 		double h = p.getHeight() * StateFrame.PIXELS_PER_METER;
