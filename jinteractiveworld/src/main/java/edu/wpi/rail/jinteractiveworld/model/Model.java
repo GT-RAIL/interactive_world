@@ -2,9 +2,8 @@ package edu.wpi.rail.jinteractiveworld.model;
 
 import java.util.List;
 
-import edu.wpi.rail.jinteractiveworld.model.transform.Transform;
-import edu.wpi.rail.jinteractiveworld.world.Item;
-import edu.wpi.rail.jinteractiveworld.world.Object;
+import edu.wpi.rail.jinteractiveworld.data.DataPoint;
+import edu.wpi.rail.jinteractiveworld.ros.msgs.interactiveworldmsgs.*;
 
 /**
  * A model consists of a collection of locations and an idea of ideal placement
@@ -16,12 +15,12 @@ import edu.wpi.rail.jinteractiveworld.world.Object;
 public interface Model {
 
 	/**
-	 * Add a transform to this model.
+	 * Add a data point to this model.
 	 * 
-	 * @param tf
+	 * @param point
 	 *            The transform to add to this model.
 	 */
-	public void add(Transform tf);
+	public void add(DataPoint point);
 
 	/**
 	 * Get the size of the model.
@@ -35,21 +34,35 @@ public interface Model {
 	 * 
 	 * @return The associated data for this model.
 	 */
-	public List<Transform> getData();
+	public List<DataPoint> getData();
 
 	/**
-	 * Get the reference object for this model.
+	 * Get the reference frame for this model.
 	 * 
-	 * @return The reference object for this model.
+	 * @return The reference frame for this model.
 	 */
-	public Object getReference();
+	public String getReferenceFrame();
 
 	/**
 	 * Get the target item for this model.
-	 * 
+	 *
 	 * @return The target item for this model.
 	 */
-	public Item getTarget();
+	public Item getItem();
+
+	/**
+	 * Get the target room for this model.
+	 *
+	 * @return The target room for this model.
+	 */
+	public Room getRoom();
+
+	/**
+	 * Get the target surface for this model.
+	 *
+	 * @return The target surface for this model.
+	 */
+	public Surface getSurface();
 
 	/**
 	 * Train the model.
@@ -63,7 +76,7 @@ public interface Model {
 	 * @return The most likely placement location of the target item based on
 	 *         this model.
 	 */
-	public Transform getHighestPlacementLocation();
+	public Placement getPlacementLocation();
 
 	/**
 	 * Get the value that the was the result of the placement decision.

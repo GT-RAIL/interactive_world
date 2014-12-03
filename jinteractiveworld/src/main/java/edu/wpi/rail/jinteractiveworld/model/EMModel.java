@@ -1,48 +1,138 @@
 package edu.wpi.rail.jinteractiveworld.model;
 
-import java.util.ArrayList;
-
+import edu.wpi.rail.jinteractiveworld.data.DataPoint;
+import edu.wpi.rail.jinteractiveworld.data.DataSet;
+import edu.wpi.rail.jinteractiveworld.model.Model;
+import edu.wpi.rail.jinteractiveworld.ros.msgs.interactiveworldmsgs.*;
+import edu.wpi.rail.jrosbridge.messages.geometry.Point;
 import weka.clusterers.EM;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.Remove;
-import edu.wpi.rail.jinteractiveworld.data.DataSet;
-import edu.wpi.rail.jinteractiveworld.model.transform.RotationMatrix;
-import edu.wpi.rail.jinteractiveworld.model.transform.Transform;
-import edu.wpi.rail.jinteractiveworld.model.transform.Vector3;
-import edu.wpi.rail.jinteractiveworld.world.Item;
-import edu.wpi.rail.jinteractiveworld.world.Object;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * A ClusteringModel is a model which is based on a EM clustering. After running
+ * A EMModel is a model which is based on a EM clustering. After running
  * EM, the densest cluster is picked and its mean values are set as the best
  * location. Density is defined to be the average distance between all points in
  * the cluster.
  * 
  * @author Russell Toris -- rctoris@wpi.edu
- * @version February 24, 2014
+ * @version December 3, 2014
  */
-public class ClusteringModel extends DataSetModel {
+public class EMModel implements Model {
 
 	private EM em;
-	private Transform best;
+	private Placement best;
 	private double min;
+	private DataSet data;
+	private String referenceFrame;
+	private Item item;
+	private Room room;
+	private Surface surface;
 
 	/**
 	 * Create a clustering model based on the given data set. This model will be
 	 * initially trained upon instantiation.
-	 * 
+	 *
 	 * @param data
 	 *            The data set for the model.
-	 * @param reference
-	 *            The reference object for this model.
-	 * @param target
-	 *            The target item for this model.
+	 * @param item
+	 *            The item for this model.
+	 * @param room
+	 *            The target room for this model.
+	 * @param surface
+	 *            The target surface for this model.
+	 * @param referenceFrame
+	 *            The reference frame for this model.
 	 */
-	public ClusteringModel(DataSet data, Object reference, Item target) {
-		// super calls train which initializes em and the best location
-		super(data, reference, target);
+	public EMModel(DataSet data, Item item, Room room, Surface surface, String referenceFrame) {
+		this.data = data;
+		this.item = item;
+		this.room = room;
+		this.surface = surface;
+		this.referenceFrame = referenceFrame;
+		this.train();
+	}
+
+	/**
+	 * Add a data point to this model. The model will the be retrained.
+	 *
+	 * @param point
+	 *            The data point to add to this model.
+	 */
+	@Override
+	public void add(DataPoint point) {
+		this.data.add(point);
+		// retrain
+		this.train();
+	}
+
+	/**
+	 * Get the size of the model.
+	 *
+	 * @return The size of the model.
+	 */
+	public int size() {
+		return this.data.size();
+	}
+
+	/**
+	 * Get all the associated data for this model.
+	 *
+	 * @return The associated data for this model.
+	 */
+	@Override
+	public List<DataPoint> getData() {
+		// copy into an array list
+		ArrayList<DataPoint> list = new ArrayList<DataPoint>();
+		for (int i = 0; i < this.data.size(); i++) {
+			list.add(this.data.get(i));
+		}
+		return list;
+	}
+
+	/**
+	 * Get the reference frame for this model.
+	 *
+	 * @return The reference frame for this model.
+	 */
+	@Override
+	public String getReferenceFrame() {
+		return this.referenceFrame;
+	}
+
+	/**
+	 * Get the target item for this model.
+	 *
+	 * @return The target item for this model.
+	 */
+	@Override
+	public Item getItem() {
+		return this.item;
+	}
+
+	/**
+	 * Get the target room for this model.
+	 *
+	 * @return The target room for this model.
+	 */
+	@Override
+	public Room getRoom() {
+		return this.room;
+	}
+
+	/**
+	 * Get the target surface for this model.
+	 *
+	 * @return The target surface for this model.
+	 */
+	@Override
+	public Surface getSurface() {
+		return this.surface;
 	}
 
 	/**
@@ -113,12 +203,9 @@ public class ClusteringModel extends DataSetModel {
 
 					double x = clusterData[m][0][0];
 					double y = clusterData[m][1][0];
+					double z = 0.0;
 					double theta = clusterData[m][2][0];
-
-					Vector3 v = new Vector3(x, y);
-					RotationMatrix r = new RotationMatrix(theta,
-							RotationMatrix.RotationType.Z_ROTATION);
-					this.best = new Transform(r, v);
+					this.best = new Placement(this.item, this.room, this.surface, this.referenceFrame, new Point(x, y, z), theta);
 				}
 			}
 		} catch (Exception e) {
@@ -135,8 +222,8 @@ public class ClusteringModel extends DataSetModel {
 	 *         this model.
 	 */
 	@Override
-	public Transform getHighestPlacementLocation() {
-		return best;
+	public Placement getPlacementLocation() {
+		return this.best;
 	}
 
 	/**

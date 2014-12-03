@@ -8,18 +8,16 @@ import javax.json.JsonObject;
 import org.junit.Before;
 import org.junit.Test;
 
-import edu.wpi.rail.jinteractiveworld.world.Bed;
 import edu.wpi.rail.jrosbridge.messages.Message;
 
 public class TestItem {
 
-	private Item empty, o1, o2;
+	private Item empty, o1;
 
 	@Before
 	public void setUp() {
 		empty = new Item();
 		o1 = new Item("name", 1.5, 3.0);
-		o2 = new Item(new Bed());
 	}
 
 	@Test
@@ -61,29 +59,6 @@ public class TestItem {
 	}
 
 	@Test
-	public void testObjectConstructor() {
-		Bed b = new Bed();
-		assertEquals(b.getName(), o2.getName());
-		assertEquals(b.getWidth(), o2.getWidth(), 0);
-		assertEquals(b.getHeight(), o2.getHeight(), 0);
-
-		assertEquals("{\"name\":\"Bed\",\"width\":1.7,\"height\":2.15}",
-				o2.toString());
-
-		assertEquals(3, o2.toJsonObject().size());
-		assertEquals(b.getName(), o2.toJsonObject()
-				.getString(Item.FIELD_NAME));
-		assertEquals(b.getWidth(),
-				o2.toJsonObject().getJsonNumber(Item.FIELD_WIDTH)
-						.doubleValue(), 0);
-		assertEquals(b.getHeight(),
-				o2.toJsonObject().getJsonNumber(Item.FIELD_HEIGHT)
-						.doubleValue(), 0);
-
-		assertEquals(Item.TYPE, o2.getMessageType());
-	}
-
-	@Test
 	public void testSetMessageType() {
 		empty.setMessageType("test");
 		assertEquals("test", empty.getMessageType());
@@ -93,20 +68,14 @@ public class TestItem {
 	public void testHashCode() {
 		assertEquals(empty.toString().hashCode(), empty.hashCode());
 		assertEquals(o1.toString().hashCode(), o1.hashCode());
-		assertEquals(o2.toString().hashCode(), o2.hashCode());
 	}
 
 	@Test
 	public void testEquals() {
 		assertFalse(empty.equals(o1));
-		assertFalse(empty.equals(o2));
 		assertFalse(o1.equals(empty));
-		assertFalse(o1.equals(o2));
-		assertFalse(o2.equals(o1));
-		assertFalse(o2.equals(empty));
 
 		assertTrue(o1.equals(o1));
-		assertTrue(o2.equals(o2));
 		assertTrue(empty.equals(empty));
 	}
 

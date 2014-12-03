@@ -64,16 +64,6 @@ public class Item extends Message {
 	}
 
 	/**
-	 * Create a new Item message from a JInteractiveWorld object.
-	 * 
-	 * @param object
-	 *            The JInteractiveWorld to create a message from.
-	 */
-	public Item(edu.wpi.rail.jinteractiveworld.world.Object object) {
-		this(object.getName(), object.getWidth(), object.getHeight());
-	}
-
-	/**
 	 * Get the name value of this object.
 	 * 
 	 * @return The name value of this object.
