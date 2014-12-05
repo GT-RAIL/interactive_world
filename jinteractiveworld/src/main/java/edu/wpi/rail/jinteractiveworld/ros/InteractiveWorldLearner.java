@@ -9,12 +9,15 @@ import edu.wpi.rail.jrosbridge.Service;
 import edu.wpi.rail.jrosbridge.callback.CallServiceCallback;
 import edu.wpi.rail.jrosbridge.messages.geometry.Point;
 import edu.wpi.rail.jrosbridge.services.ServiceRequest;
+import java.sql.*;
 
 public class InteractiveWorldLearner {
 
 	public static final String NODE_NAME = "interactive_world_learner";
 
 	public static final String LEARN_HYPOTHESES_SERVICE_NAME = "/" + InteractiveWorldLearner.NODE_NAME + "/learn_hypotheses";
+
+	public static final String DB_CLASS = "com.mysql.jdbc.Driver";
 
 	private Ros ros;
 	private Service learnHypotheses;
@@ -74,10 +77,25 @@ public class InteractiveWorldLearner {
 				models[i] = new Model(em);
 			}
 
-			System.out.println("Model learning done, returning result.");
-			// send back the response
 			TaskModels taskModels = new TaskModels(models);
-			LearnModels.Response resp = new LearnModels.Response(taskModels, true);
+			System.out.println("Model learning done.");
+
+			// store the models in the RMS
+			System.out.print("Attempting connection to the RMS...");
+			try {
+				Class.forName(InteractiveWorldLearner.DB_CLASS);
+				String url = "jdbc:mysql://" + req.getHost() + ":" + req.getPort() + "/" + req.getDatabase();
+				Connection connection = DriverManager.getConnection(url, req.getUser(), req.getPassword());
+
+				// close the connection
+				connection.close();
+				System.out.print("Models stored to the RMS.");
+			} catch (ClassNotFoundException|SQLException e) {
+				System.err.println("Could not connect the the RMS: " + e.getMessage());
+			}
+
+			// send back the response
+			LearnModels.Response resp = new LearnModels.Response(true);
 			learnHypotheses.sendResponse(resp, request.getId());
 		}
 	}

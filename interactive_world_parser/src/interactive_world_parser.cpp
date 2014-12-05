@@ -26,11 +26,8 @@ interactive_world_parser::interactive_world_parser() :
   }
 
   // setup servers
-  parse_ = private_.advertiseService("parse", &interactive_world_parser::parse_cb, this);
-  save_files_ = private_.advertiseService("save_files", &interactive_world_parser::save_files_cb, this);
-  learn_models_ = private_.advertiseService("learn_models", &interactive_world_parser::learn_models_cb, this);
-  parse_and_save_files_ = private_.advertiseService("parse_and_save_files", &interactive_world_parser::parse_and_save_files_cb, this);
-  parse_and_learn_models_ = private_.advertiseService("parse_and_learn_models", &interactive_world_parser::parse_and_learn_models_cb, this);
+  parse_and_store_ = private_.advertiseService("parse_and_store", &interactive_world_parser::parse_and_store_cb, this);
+  parse_and_save_ = private_.advertiseService("parse_and_save", &interactive_world_parser::parse_and_save_cb, this);
 
   // wait for external service
   learn_hypotheses_ = private_.serviceClient<interactive_world_msgs::LearnModels>("/interactive_world_learner/learn_hypotheses");
@@ -47,12 +44,14 @@ interactive_world_parser::~interactive_world_parser()
 }
 
 static int __limit__ = 0;
+
 static bool cond(const interactive_world_msgs::PlacementSet &set)
 {
   return set.placements.size() < __limit__;
 }
 
-bool interactive_world_parser::parse_cb(std_srvs::Empty::Request &req, std_srvs::Empty::Response &resp)
+
+void interactive_world_parser::parse()
 {
   ROS_INFO("=== BEGINING PARSE ===");
   data_.clear();
@@ -113,18 +112,16 @@ bool interactive_world_parser::parse_cb(std_srvs::Empty::Request &req, std_srvs:
       }
     }
     ROS_INFO("++ %d/%d completed sessions with %d placements.", num_completed, num_experiments, num_placements);
-    __limit__ = num_placements * 0.05;
+    __limit__ = (int) (num_placements * 0.05);
     ROS_INFO("++ Removing data sets with less than %d placements...", __limit__);
     vector<interactive_world_msgs::PlacementSet> &v = data_[condition.get_id()].data;
     v.erase(remove_if(v.begin(), v.end(), cond), v.end());
   }
 
   ROS_INFO("=== PARSE FINISHED ===");
-
-  return true;
 }
 
-bool interactive_world_parser::save_files_cb(std_srvs::Empty::Request &req, std_srvs::Empty::Response &resp)
+void interactive_world_parser::save()
 {
   ROS_INFO("Writing data...");
   // save the data
@@ -148,11 +145,9 @@ bool interactive_world_parser::save_files_cb(std_srvs::Empty::Request &req, std_
     }
   }
   ROS_INFO("Finished!");
-
-  return true;
 }
 
-bool interactive_world_parser::learn_models_cb(std_srvs::Empty::Request &req, std_srvs::Empty::Response &resp)
+void interactive_world_parser::learn()
 {
   ROS_INFO("=== BEGINING MODEL LEARNING ===");
   // save the data
@@ -163,25 +158,32 @@ bool interactive_world_parser::learn_models_cb(std_srvs::Empty::Request &req, st
     ROS_INFO("Sending condition %d data off to jinteractiveworld...", condition_id);
     // construct the message
     interactive_world_msgs::LearnModels srv;
+    srv.request.host = host_;
+    srv.request.port = port_;
+    srv.request.user = user_;
+    srv.request.password = password_;
+    srv.request.database = database_;
+    srv.request.condition_id = condition_id;
     srv.request.data = it->second;
     learn_hypotheses_.call(srv);
     ROS_INFO("Condition %d models learned.", condition_id);
   }
   ROS_INFO("=== MODEL LEARNING FINISHED ===");
+}
 
+bool interactive_world_parser::parse_and_store_cb(std_srvs::Empty::Request &req, std_srvs::Empty::Response &resp)
+{
+  this->parse();
+  this->learn();
   return true;
 }
 
 
-bool interactive_world_parser::parse_and_save_files_cb(std_srvs::Empty::Request &req, std_srvs::Empty::Response &resp)
+bool interactive_world_parser::parse_and_save_cb(std_srvs::Empty::Request &req, std_srvs::Empty::Response &resp)
 {
-  return this->parse_cb(req, resp) && this->save_files_cb(req, resp);
-}
-
-
-bool interactive_world_parser::parse_and_learn_models_cb(std_srvs::Empty::Request &req, std_srvs::Empty::Response &resp)
-{
-  return this->parse_cb(req, resp) && this->learn_models_cb(req, resp);
+  this->parse();
+  this->save();
+  return true;
 }
 
 

@@ -33,28 +33,103 @@ public class LearnModels {
     public static class Request extends ServiceRequest {
 
         /**
+         * The name of the host field for the request.
+         */
+        public static final String FIELD_HOST = "host";
+
+        /**
+         * The name of the port field for the request.
+         */
+        public static final String FIELD_PORT = "port";
+
+        /**
+         * The name of the user field for the request.
+         */
+        public static final String FIELD_USER = "user";
+
+        /**
+         * The name of the password field for the request.
+         */
+        public static final String FIELD_PASSWORD = "password";
+
+        /**
+         * The name of the database field for the request.
+         */
+        public static final String FIELD_DATABASE = "database";
+
+        /**
+         * The name of the condition id field for the request.
+         */
+        public static final String FIELD_CONDITION_ID = "condition_id";
+
+        /**
          * The name of the data field for the request.
          */
         public static final String FIELD_DATA = "data";
 
         private final TaskTrainingData data;
+        private final int port, conditionId;
+        private final String host, user, password, database;
 
         /**
          * Create a new empty LearnModels ServiceRequest.
          */
         public Request() {
-            this(new TaskTrainingData());
+            this("", 0, "", "", "", 0, new TaskTrainingData());
         }
 
         /**
          * Create a new LearnModels ServiceRequest.
          *
+         * @param host
+         *            The host of the request.
+         * @param port
+         *            The port of the request.
+         * @param user
+         *            The user of the request.
+         * @param password
+         *            The password of the request.
+         * @param database
+         *            The database of the request.
+         * @param conditionId
+         *            The condition ID of the request.
          * @param data
          *            The data of the request.
          */
-        public Request(TaskTrainingData data) {
-            super(Json.createObjectBuilder().add(Request.FIELD_DATA, data.toJsonObject()).build(), LearnModels.TYPE);
+        public Request(String host, int port, String user, String password, String database, int conditionId, TaskTrainingData data) {
+            super(Json.createObjectBuilder().add(Request.FIELD_DATA, data.toJsonObject())
+                    .add(Request.FIELD_CONDITION_ID, conditionId).build(), LearnModels.TYPE);
+            this.host = host;
+            this.port = port;
+            this.user = user;
+            this.password = password;
+            this.database = database;
+            this.conditionId = conditionId;
             this.data = data;
+        }
+
+        public int getPort() {
+            return port;
+        }
+
+        public String getHost() {
+            return host;
+        }
+
+        public String getUser() {
+            return user;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public String getDatabase() {
+            return database;
+        }
+
+        public int getConditionId() {
+            return this.conditionId;
         }
 
         public TaskTrainingData getData() {
@@ -66,7 +141,7 @@ public class LearnModels {
          */
         @Override
         public Request clone() {
-            return new LearnModels.Request(this.data);
+            return new LearnModels.Request(this.host, this.port, this.user, this.password, this.database, this.conditionId, this.data);
         }
 
         /**
@@ -105,10 +180,22 @@ public class LearnModels {
          * @return A LearnModels ServiceRequest based on the given JSON object.
          */
         public static Request fromJsonObject(JsonObject jsonObject) {
+            String host = jsonObject.containsKey(Request.FIELD_HOST) ?
+                    jsonObject.getString(Request.FIELD_HOST) : "";
+            int port = jsonObject.containsKey(Request.FIELD_PORT) ? jsonObject
+                    .getJsonNumber(Request.FIELD_PORT).intValue() : 0;
+            String user = jsonObject.containsKey(Request.FIELD_USER) ?
+                    jsonObject.getString(Request.FIELD_USER) : "";
+            String password = jsonObject.containsKey(Request.FIELD_PASSWORD) ?
+                    jsonObject.getString(Request.FIELD_PASSWORD) : "";
+            String database = jsonObject.containsKey(Request.FIELD_DATABASE) ?
+                    jsonObject.getString(Request.FIELD_DATABASE) : "";
+            int conditionId = jsonObject.containsKey(Request.FIELD_CONDITION_ID) ? jsonObject
+                    .getJsonNumber(Request.FIELD_CONDITION_ID).intValue() : 0;
             TaskTrainingData data = jsonObject.containsKey(Request.FIELD_DATA) ? TaskTrainingData
                     .fromJsonObject(jsonObject.getJsonObject(Request.FIELD_DATA))
                     : new TaskTrainingData();
-            return new LearnModels.Request(data);
+            return new LearnModels.Request(host, port, user, password, database, conditionId, data);
         }
     }
 
@@ -121,35 +208,21 @@ public class LearnModels {
     public static class Response extends ServiceResponse {
 
         /**
-         * The name of the models field for the request.
-         */
-        public static final String FIELD_MODELS = "models";
-
-        private final TaskModels models;
-
-        /**
          * Create a new empty LearnModels ServiceResponse.
          */
         public Response() {
-            this(new TaskModels(), true);
+            this(true);
         }
 
         /**
          * Create a new LearnModels ServiceResponse.
          *
-         * @param models
-         *            The models of the response.
          * @param result
          *            The result flag for the response (i.e., if the service
          *            server returned a success).
          */
-        public Response(TaskModels models, boolean result) {
-            super(Json.createObjectBuilder().add(Response.FIELD_MODELS, models.toJsonObject()).build(), LearnModels.TYPE, result);
-            this.models = models;
-        }
-
-        public TaskModels getModels() {
-            return this.models;
+        public Response(boolean result) {
+            super(ServiceResponse.EMPTY_MESSAGE, LearnModels.TYPE, result);
         }
 
         /**
@@ -157,7 +230,7 @@ public class LearnModels {
          */
         @Override
         public Response clone() {
-            return new LearnModels.Response(this.models, this.getResult());
+            return new LearnModels.Response(this.getResult());
         }
 
         /**
@@ -196,10 +269,7 @@ public class LearnModels {
          * @return A LearnModels ServiceResponse based on the given JSON object.
          */
         public static Response fromJsonObject(JsonObject jsonObject) {
-            TaskModels models = jsonObject.containsKey(Response.FIELD_MODELS) ? TaskModels
-                    .fromJsonObject(jsonObject.getJsonObject(Response.FIELD_MODELS))
-                    : new TaskModels();
-            return new LearnModels.Response(models, true);
+            return new LearnModels.Response(true);
         }
     }
 }

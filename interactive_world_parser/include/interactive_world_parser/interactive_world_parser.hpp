@@ -23,15 +23,17 @@ public:
 
   ~interactive_world_parser();
 
-  bool parse_cb(std_srvs::Empty::Request &req, std_srvs::Empty::Response &resp);
+  void parse();
 
-  bool save_files_cb(std_srvs::Empty::Request &req, std_srvs::Empty::Response &resp);
+  void learn();
 
-  bool learn_models_cb(std_srvs::Empty::Request &req, std_srvs::Empty::Response &resp);
+  void save();
 
-  bool parse_and_save_files_cb(std_srvs::Empty::Request &req, std_srvs::Empty::Response &resp);
+  void store();
 
-  bool parse_and_learn_models_cb(std_srvs::Empty::Request &req, std_srvs::Empty::Response &resp);
+  bool parse_and_save_cb(std_srvs::Empty::Request &req, std_srvs::Empty::Response &resp);
+
+  bool parse_and_store_cb(std_srvs::Empty::Request &req, std_srvs::Empty::Response &resp);
 
 private:
   interactive_world_msgs::Configuration parse_json_config(Json::Value &config);
@@ -52,7 +54,7 @@ private:
   std::string host_, user_, password_, database_;
   int port_, study_id_;
   std::map<uint, interactive_world_msgs::TaskTrainingData> data_;
-  ros::ServiceServer parse_, save_files_, learn_models_, parse_and_save_files_, parse_and_learn_models_;
+  ros::ServiceServer parse_and_store_, parse_and_save_;
   ros::ServiceClient learn_hypotheses_;
 };
 

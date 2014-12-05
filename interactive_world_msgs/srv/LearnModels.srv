@@ -1,3 +1,8 @@
+string host                                     # the host of the RMS database
+int32 port                                      # the port of the RMS database
+string user                                     # the user of the RMS database
+string password                                 # the password of the RMS database
+string database                                 # the database of the RMS database
+int32 condition_id                              # the condition ID of the data
 interactive_world_msgs/TaskTrainingData data    # the data to train on
 ---
-interactive_world_msgs/TaskModels models        # the resulting models
