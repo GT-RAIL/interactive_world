@@ -19,6 +19,21 @@ public class InteractiveWorldLearner {
 
 	public static final String DB_CLASS = "com.mysql.jdbc.Driver";
 
+	public static final String DB_CREATE = "CREATE TABLE IF NOT EXISTS `models` (" +
+			"  `id` int(10) unsigned NOT NULL AUTO_INCREMENT," +
+			"  `condition_id` int(10) unsigned NOT NULL," +
+			"  `value` mediumtext NOT NULL," +
+			"  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP," +
+			"  `modified` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'," +
+			"  PRIMARY KEY (`id`)," +
+			"  UNIQUE KEY `condition_id` (`condition_id`)" +
+			") ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;";
+
+	public static final String DB_FOREIGN_KEY = "ALTER TABLE `models`" +
+			"  ADD CONSTRAINT `models_ibfk_1` FOREIGN KEY (`condition_id`) REFERENCES `conditions` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;";
+
+	public static final String DB_INSERT_MODEL = "INSERT INTO `models` USER_ID, USERNAME, CREATED_BY, CREATED_DATE) VALUES (?,?,?,?)";
+
 	private Ros ros;
 	private Service learnHypotheses;
 
@@ -81,15 +96,26 @@ public class InteractiveWorldLearner {
 			System.out.println("Model learning done.");
 
 			// store the models in the RMS
-			System.out.print("Attempting connection to the RMS...");
+			System.out.println("Attempting connection to the RMS...");
 			try {
 				Class.forName(InteractiveWorldLearner.DB_CLASS);
 				String url = "jdbc:mysql://" + req.getHost() + ":" + req.getPort() + "/" + req.getDatabase();
 				Connection connection = DriverManager.getConnection(url, req.getUser(), req.getPassword());
 
+				// check for the table
+				DatabaseMetaData dbm = connection.getMetaData();
+				ResultSet tables = dbm.getTables(null, null, "models", null);
+				if (!tables.next()) {
+					// create the table
+					Statement create = connection.createStatement();
+					create.executeUpdate(InteractiveWorldLearner.DB_CREATE);
+					Statement foreignKey = connection.createStatement();
+					foreignKey.executeUpdate(InteractiveWorldLearner.DB_FOREIGN_KEY);
+				}
+
 				// close the connection
 				connection.close();
-				System.out.print("Models stored to the RMS.");
+				System.out.println("Models stored to the RMS.");
 			} catch (ClassNotFoundException|SQLException e) {
 				System.err.println("Could not connect the the RMS: " + e.getMessage());
 			}
