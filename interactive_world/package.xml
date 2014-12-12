@@ -15,6 +15,8 @@
 
   <run_depend>interactive_world_msgs</run_depend>
   <run_depend>interactive_world_parser</run_depend>
+  <run_depend>interactive_world_tools</run_depend>
+  <run_depend>jinteractiveworld</run_depend>
   
   <export>
     <metapackage />

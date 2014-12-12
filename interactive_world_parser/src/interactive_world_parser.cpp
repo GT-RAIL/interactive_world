@@ -1,4 +1,5 @@
 #include <interactive_world_parser/interactive_world_parser.hpp>
+#include <geometry_msgs/Point.h>
 #include <fstream>
 #include <pwd.h>
 
@@ -97,10 +98,13 @@ void interactive_world_parser::parse()
             if (log.get_label().compare("config") == 0)
             {
               config = parse_json_config(json);
-            } else if (!completion && log.get_label().compare("completion") == 0)
+            } else if (log.get_label().compare("completion") == 0)
             {
-              completion = true;
-              num_completed++;
+              if (!completion)
+              {
+                completion = true;
+                num_completed++;
+              }
             } else
             {
               // parse the placements
@@ -436,7 +440,6 @@ void interactive_world_parser::add_placement_to_data(uint condition_id, tf2::Tra
   {
     data_[condition_id] = interactive_world_msgs::TaskTrainingData();
   }
-
   interactive_world_msgs::TaskTrainingData &training = data_[condition_id];
 
   // create the placement

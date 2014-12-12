@@ -10,6 +10,7 @@ import edu.wpi.rail.jrosbridge.callback.CallServiceCallback;
 import edu.wpi.rail.jrosbridge.messages.geometry.Point;
 import edu.wpi.rail.jrosbridge.services.ServiceRequest;
 import java.sql.*;
+import java.util.ArrayList;
 
 public class InteractiveWorldLearner {
 
@@ -19,7 +20,7 @@ public class InteractiveWorldLearner {
 
 	public static final String DB_CLASS = "com.mysql.jdbc.Driver";
 
-	public static final String DB_CREATE = "CREATE TABLE IF NOT EXISTS `models` (" +
+	public static final String DB_CREATE = "CREATE TABLE IF NOT EXISTS `iwmodels` (" +
 			"  `id` int(10) unsigned NOT NULL AUTO_INCREMENT," +
 			"  `condition_id` int(10) unsigned NOT NULL," +
 			"  `value` mediumtext NOT NULL," +
@@ -29,10 +30,14 @@ public class InteractiveWorldLearner {
 			"  UNIQUE KEY `condition_id` (`condition_id`)" +
 			") ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;";
 
-	public static final String DB_FOREIGN_KEY = "ALTER TABLE `models`" +
-			"  ADD CONSTRAINT `models_ibfk_1` FOREIGN KEY (`condition_id`) REFERENCES `conditions` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;";
+	public static final String DB_FOREIGN_KEY = "ALTER TABLE `iwmodels`" +
+			"  ADD CONSTRAINT `iwmodels_ibfk_1` FOREIGN KEY (`condition_id`) REFERENCES `conditions` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;";
 
-	public static final String DB_INSERT_MODEL = "INSERT INTO `models` USER_ID, USERNAME, CREATED_BY, CREATED_DATE) VALUES (?,?,?,?)";
+	public static final String DB_ENTRY_CHECK = "SELECT `id` FROM `iwmodels` WHERE `condition_id`=?";
+
+	public static final String DB_ENTRY_DELETE = "DELETE FROM `iwmodels` WHERE `condition_id`=?";
+
+	public static final String DB_INSERT_MODEL = "INSERT INTO `iwmodels` (`condition_id`, `value`) VALUES (?,?)";
 
 	private Ros ros;
 	private Service learnHypotheses;
@@ -71,28 +76,32 @@ public class InteractiveWorldLearner {
 
 			// go trough each
 			PlacementSet[] placementSets = req.getData().getData();
-			Model[] models = new Model[placementSets.length];
+			ArrayList<Model> models = new ArrayList<Model>();
 			for (int i=0; i<placementSets.length; i++) {
 				// create a data set
 				PlacementSet placementSet = placementSets[i];
-				Item item = placementSet.getItem();
-				Room room = placementSet.getRoom();
-				Surface surface = placementSet.getSurface();
-				String referenceFrame = placementSet.getReferenceFrameId();
-				DataSet ds = new DataSet(item, room, surface, referenceFrame);
-				Placement[] placements = placementSet.getPlacements();
-				for (int j=0; j<placements.length; j++) {
-					Placement p = placements[j];
-					Point position = p.getPosition();
-					ds.add(position.getX(), position.getY(), position.getY(), p.getRotation());
-				}
+				if (placementSet.getPlacements().length > 1) {
+					Item item = placementSet.getItem();
+					Room room = placementSet.getRoom();
+					Surface surface = placementSet.getSurface();
+					String referenceFrame = placementSet.getReferenceFrameId();
+					DataSet ds = new DataSet(item, room, surface, referenceFrame);
+					Placement[] placements = placementSet.getPlacements();
+					for (int j = 0; j < placements.length; j++) {
+						Placement p = placements[j];
+						Point position = p.getPosition();
+						ds.add(position.getX(), position.getY(), position.getY(), p.getRotation());
+					}
 
-				// create the clustering model
-				EMModel em = new EMModel(ds);
-				models[i] = new Model(em);
+					// create the clustering model
+					EMModel em = new EMModel(ds);
+					models.add(new Model(em));
+				}
 			}
 
-			TaskModels taskModels = new TaskModels(models);
+			Model[] modelsArray = new Model[models.size()];
+			models.toArray(modelsArray);
+			TaskModels taskModels = new TaskModels(modelsArray);
 			System.out.println("Model learning done.");
 
 			// store the models in the RMS
@@ -104,7 +113,7 @@ public class InteractiveWorldLearner {
 
 				// check for the table
 				DatabaseMetaData dbm = connection.getMetaData();
-				ResultSet tables = dbm.getTables(null, null, "models", null);
+				ResultSet tables = dbm.getTables(null, null, "iwmodels", null);
 				if (!tables.next()) {
 					// create the table
 					Statement create = connection.createStatement();
@@ -112,6 +121,25 @@ public class InteractiveWorldLearner {
 					Statement foreignKey = connection.createStatement();
 					foreignKey.executeUpdate(InteractiveWorldLearner.DB_FOREIGN_KEY);
 				}
+
+				// check if we should clear out an old entry
+				final PreparedStatement check = connection.prepareStatement(InteractiveWorldLearner.DB_ENTRY_CHECK);
+				final int i1 = 1;
+				final int i2 = 2;
+				check.setInt(i1, req.getConditionId());
+				final ResultSet existing = check.executeQuery();
+				if(existing.next()) {
+					// delete the old one
+					final PreparedStatement delete = connection.prepareStatement(InteractiveWorldLearner.DB_ENTRY_DELETE);
+					delete.setInt(i1, req.getConditionId());
+					delete.executeUpdate();
+				}
+
+				// create our entry
+				final PreparedStatement insert = connection.prepareStatement(InteractiveWorldLearner.DB_INSERT_MODEL);
+				insert.setInt(i1, req.getConditionId());
+				insert.setString(i2, taskModels.toString());
+				insert.executeUpdate();
 
 				// close the connection
 				connection.close();

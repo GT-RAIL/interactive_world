@@ -1,0 +1,3 @@
+int32 condition_id                          # the condition ID of the data
+---
+interactive_world_msgs/TaskModels models    # The loaded models from an RMS database
