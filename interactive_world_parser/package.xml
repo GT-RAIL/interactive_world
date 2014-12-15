@@ -19,14 +19,12 @@
   <build_depend>libjsoncpp-dev</build_depend>
   <build_depend>interactive_world_msgs</build_depend>
   <build_depend>tf2</build_depend>
-  <build_depend>std_srvs</build_depend>
 
   <run_depend>roscpp</run_depend>
   <run_depend>librms</run_depend>
   <run_depend>libjsoncpp-dev</run_depend>
   <run_depend>interactive_world_msgs</run_depend>
   <run_depend>tf2</run_depend>
-  <run_depend>std_srvs</run_depend>
   <run_depend>rosbridge_server</run_depend>
   <run_depend>jinteractiveworld</run_depend>
 </package>

@@ -4,7 +4,7 @@ project(interactive_world_parser)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS roscpp librms interactive_world_msgs tf2 std_srvs)
+find_package(catkin REQUIRED COMPONENTS roscpp librms interactive_world_msgs tf2)
 
 ###################################################
 ## Declare things to be passed to other projects ##

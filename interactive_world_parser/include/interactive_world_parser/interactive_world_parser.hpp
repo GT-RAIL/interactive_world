@@ -8,11 +8,9 @@
 #include <interactive_world_msgs/Configuration.h>
 #include <interactive_world_msgs/TaskTrainingData.h>
 #include <interactive_world_msgs/LearnModels.h>
+#include <interactive_world_msgs/Parse.h>
 #include <tf2/LinearMath/Transform.h>
-#include <std_srvs/Empty.h>
 #include <map>
-
-#define DEFAULT_STUDY_ID 1
 
 #define Z_AXIS_TF2 tf2::Vector3(0, 0, 1)
 
@@ -23,7 +21,7 @@ public:
 
   ~interactive_world_parser();
 
-  void parse();
+  void parse(int study_id);
 
   void learn();
 
@@ -31,9 +29,9 @@ public:
 
   void store();
 
-  bool parse_and_save_cb(std_srvs::Empty::Request &req, std_srvs::Empty::Response &resp);
+  bool parse_and_save_cb(interactive_world_msgs::Parse::Request &req, interactive_world_msgs::Parse::Response &resp);
 
-  bool parse_and_store_cb(std_srvs::Empty::Request &req, std_srvs::Empty::Response &resp);
+  bool parse_and_store_cb(interactive_world_msgs::Parse::Request &req, interactive_world_msgs::Parse::Response &resp);
 
 private:
   interactive_world_msgs::Configuration parse_json_config(Json::Value &config);
@@ -52,7 +50,7 @@ private:
 
   librms::rms *client_;
   std::string host_, user_, password_, database_;
-  int port_, study_id_;
+  int port_;
   std::map<uint, interactive_world_msgs::TaskTrainingData> data_;
   ros::ServiceServer parse_and_store_, parse_and_save_;
   ros::ServiceClient learn_hypotheses_;

@@ -14,7 +14,6 @@ interactive_world_parser::interactive_world_parser() :
   private_.param("user", user_, string(RMS_DEFAULT_USER));
   private_.param("password", password_, string(RMS_DEFAULT_PASSWORD));
   private_.param("database", database_, string(RMS_DEFAULT_DATABASE));
-  private_.param("study_id", study_id_, DEFAULT_STUDY_ID);
 
   // create the client
   client_ = new librms::rms(host_, (unsigned int) port_, user_, password_, database_);
@@ -52,11 +51,11 @@ static bool cond(const interactive_world_msgs::PlacementSet &set)
 }
 
 
-void interactive_world_parser::parse()
+void interactive_world_parser::parse(int study_id)
 {
   ROS_INFO("=== BEGINING PARSE ===");
   data_.clear();
-  librms::study study = client_->get_study((unsigned int) study_id_);
+  librms::study study = client_->get_study(study_id);
   ROS_INFO("Running over study \"%s\"...", study.get_name().c_str());
 
   // grab the conditions
@@ -71,9 +70,9 @@ void interactive_world_parser::parse()
     int num_placements = 0;
 
     vector<librms::slot> &slots = condition.get_slots();
+    ROS_INFO("++ Parsing %d slots...",(int) slots.size());
     for (uint j = 0; j < slots.size(); j++)
     {
-      ROS_INFO("++ Parsing slot %d/%d...", j + 1, (int) slots.size());
       librms::slot &slot = slots[j];
       if (slot.has_appointment())
       {
@@ -175,17 +174,17 @@ void interactive_world_parser::learn()
   ROS_INFO("=== MODEL LEARNING FINISHED ===");
 }
 
-bool interactive_world_parser::parse_and_store_cb(std_srvs::Empty::Request &req, std_srvs::Empty::Response &resp)
+bool interactive_world_parser::parse_and_store_cb(interactive_world_msgs::Parse::Request &req, interactive_world_msgs::Parse::Response &resp)
 {
-  this->parse();
+  this->parse(req.study_id);
   this->learn();
   return true;
 }
 
 
-bool interactive_world_parser::parse_and_save_cb(std_srvs::Empty::Request &req, std_srvs::Empty::Response &resp)
+bool interactive_world_parser::parse_and_save_cb(interactive_world_msgs::Parse::Request &req, interactive_world_msgs::Parse::Response &resp)
 {
-  this->parse();
+  this->parse(req.study_id);
   this->save();
   return true;
 }
@@ -394,8 +393,10 @@ void interactive_world_parser::parse_json_placement(Json::Value &placement, inte
       {
         // convert to object2 frame
         tf2::Transform t_object2_object = closest_t.inverseTimes(t_surface_object);
-        // store the value
-        add_placement_to_data(condition_id, t_object2_object, item_msg, room_msg, surface_msg, item.name);
+        // store the value (room/surface doesn't matter)
+        interactive_world_msgs::Room tmp_room;
+        interactive_world_msgs::Surface tmp_surface;
+        add_placement_to_data(condition_id, t_object2_object, item_msg, tmp_room, tmp_surface, item.name);
       }
     }
   }
