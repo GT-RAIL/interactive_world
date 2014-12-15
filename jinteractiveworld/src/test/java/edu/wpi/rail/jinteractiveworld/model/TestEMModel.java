@@ -11,7 +11,7 @@ public class TestEMModel {
 	
 	@Test
 	public void testInvalidDataSet() {
-		EMModel model = new EMModel(null);
+		EMModel model = new EMModel(null, null);
 		assertNull(model.getPlacementLocation());
 	}
 
@@ -31,7 +31,7 @@ public class TestEMModel {
 		data.add(-5.125, -4.875, 0, Math.PI / 2.0);
 		data.add(-5.125, -5.125, 0, Math.PI);
 
-		EMModel model = new EMModel(data);
+		EMModel model = new EMModel(data, EMModel.RankingFunction.CUSTOM);
 
 		Placement p = model.getPlacementLocation();
 		assertEquals("test", p.getReferenceFrameId());

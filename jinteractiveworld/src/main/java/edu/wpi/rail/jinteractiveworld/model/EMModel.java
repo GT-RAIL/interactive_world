@@ -22,10 +22,15 @@ import java.util.List;
  */
 public class EMModel implements Model {
 
+	public enum RankingFunction {
+		CUSTOM
+	}
+
 	private EM em;
 	private Placement best;
 	private double decisionValue, sigmaX, sigmaY, sigmaZ, sigmaTheta;
 	private DataSet data;
+	private RankingFunction rankingType;
 
 	/**
 	 * Create a clustering model based on the given data set. This model will be
@@ -34,8 +39,9 @@ public class EMModel implements Model {
 	 * @param data
 	 *            The data set for the model.
 	 */
-	public EMModel(DataSet data) {
+	public EMModel(DataSet data, RankingFunction rankingType) {
 		this.data = data;
+		this.rankingType = rankingType;
 		this.train();
 	}
 
@@ -157,34 +163,13 @@ public class EMModel implements Model {
 				clusters[clust].add(inst);
 			}
 
-			// determine the densest cluster
+			// rank the clusters
 			for (int m = 0; m < clusters.length; m++) {
-				ArrayList<Instance> curInsts = clusters[m];
-				double distance = 0;
-				for (int i = 0; i < curInsts.size(); i++) {
-					Instance instI = curInsts.get(i);
-					for (int j = 0; j < curInsts.size(); j++) {
-						if (i != j) {
-							Instance instJ = curInsts.get(j);
-							// get each attribute
-							double sum = 0;
-							for (int k = 0; k < instI.numAttributes(); k++) {
-								sum += Math.pow(
-										instI.value(k) - instJ.value(k), 2.0);
-							}
-							// get the distance
-							distance += Math.sqrt(sum);
-						}
-					}
-				}
-				// average
-				double density = distance
-						/ (curInsts.size() * (curInsts.size() - 1)) * 1.0
-						/ (((double) curInsts.size()) / ((double) this.size()));
+				double ranking = this.determineRanking(clusters[m]);
 
 				// check for a new best
-				if (density < this.decisionValue) {
-					this.decisionValue = density;
+				if (ranking < this.decisionValue) {
+					this.decisionValue = ranking;
 					double x = clusterData[m][0][0];
 					this.sigmaX = clusterData[m][0][1];
 					double y = clusterData[m][1][0];
@@ -200,6 +185,37 @@ public class EMModel implements Model {
 			System.err.println("[ERROR]: Could not train model: "
 					+ e.getMessage());
 		}
+	}
+
+	private double determineRanking(ArrayList<Instance> instances) {
+		// check the type
+		double value = Double.POSITIVE_INFINITY;
+
+		if (this.rankingType.equals(RankingFunction.CUSTOM)) {
+			double distance = 0;
+			for (int i = 0; i < instances.size(); i++) {
+				Instance instI = instances.get(i);
+				for (int j = 0; j < instances.size(); j++) {
+					if (i != j) {
+						Instance instJ = instances.get(j);
+						// get each attribute
+						double sum = 0;
+						for (int k = 0; k < instI.numAttributes(); k++) {
+							sum += Math.pow(
+									instI.value(k) - instJ.value(k), 2.0);
+						}
+						// get the distance
+						distance += Math.sqrt(sum);
+					}
+				}
+			}
+			// average
+			value = distance
+					/ (instances.size() * (instances.size() - 1)) * 1.0
+					/ (((double) instances.size()) / ((double) this.size()));
+		}
+
+		return value;
 	}
 
 	/**

@@ -94,7 +94,7 @@ public class InteractiveWorldLearner {
 					}
 
 					// create the clustering model
-					EMModel em = new EMModel(ds);
+					EMModel em = new EMModel(ds, EMModel.RankingFunction.CUSTOM);
 					models.add(new Model(em));
 				}
 			}
