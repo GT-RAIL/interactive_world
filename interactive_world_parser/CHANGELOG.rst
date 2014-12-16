@@ -2,6 +2,11 @@
 Changelog for package interactive_world_parser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.0.2 (2014-12-16)
+------------------
+* study ID part of request
+* Contributors: Russell Toris
+
 0.0.1 (2014-12-12)
 ------------------
 * travis fix
