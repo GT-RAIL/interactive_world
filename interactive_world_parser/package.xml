@@ -1,6 +1,6 @@
 <package>
   <name>interactive_world_parser</name>
-  <version>0.0.1</version>
+  <version>0.0.2</version>
   <description>The Main Parser for the Interactive World Database</description>
 
   <author email="rctoris@wpi.edu">Russell Toris</author>
