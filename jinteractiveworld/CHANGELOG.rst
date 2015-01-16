@@ -2,6 +2,9 @@
 Changelog for package jinteractiveworld
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.0.3 (2015-01-16)
+------------------
+
 0.0.2 (2014-12-16)
 ------------------
 * updates to ranking function

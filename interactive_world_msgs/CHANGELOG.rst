@@ -2,6 +2,11 @@
 Changelog for package interactive_world_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.0.3 (2015-01-16)
+------------------
+* spatial world model added
+* Contributors: Russell Toris
+
 0.0.2 (2014-12-16)
 ------------------
 * study ID part of request
