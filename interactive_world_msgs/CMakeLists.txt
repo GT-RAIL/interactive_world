@@ -30,6 +30,7 @@ add_service_files(FILES
   LearnModels.srv
   LoadModels.srv
   Parse.srv
+  StoreObservation.srv
 )
 
 ## Generate added messages and services with any dependencies listed here

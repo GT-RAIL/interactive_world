@@ -1,0 +1,14 @@
+string room
+string room_frame_id
+float64 room_conf
+string surface
+string surface_frame_id
+float64 surface_conf
+string item
+string item_frame_id
+float64 item_conf
+float64 x
+float64 y
+float64 z
+float64 theta
+---
