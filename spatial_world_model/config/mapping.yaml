@@ -1,6 +1,8 @@
 - object_name: "spoon"
-  marker_id: 14
+  marker_id: 1
 - object_name: "fork"
-  marker_id: 15
+  marker_id: 2
 - object_name: "bowl"
-  marker_id: 16
+  marker_id: 3
+- object_name: "cup"
+  marker_id: 4

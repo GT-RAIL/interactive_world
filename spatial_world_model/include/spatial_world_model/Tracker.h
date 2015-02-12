@@ -20,7 +20,7 @@ class Tracker
 {
 public:
   static const int TF_CACHE_TIME = 5;
-  static const double SURFACE_Z_THRESH = 0.02;
+  static const double SURFACE_Z_THRESH = 0.05;
 
   Tracker();
 

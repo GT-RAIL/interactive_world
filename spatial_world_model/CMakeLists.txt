@@ -4,7 +4,7 @@ project(spatial_world_model)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS roscpp interactive_world_msgs ar_track_alvar_msgs roslib tf2 tf2_ros geometry_msgs)
+find_package(catkin REQUIRED COMPONENTS roscpp interactive_world_msgs ar_track_alvar_msgs roslib tf2 tf2_ros geometry_msgs std_srvs)
 find_package(PkgConfig)
 find_package(Boost REQUIRED COMPONENTS thread)
 
