@@ -102,46 +102,52 @@ bool Tracker::snapshotCallback(std_srvs::Empty::Request &req, std_srvs::Empty::R
   // lock for the vector
   boost::mutex::scoped_lock lock(mutex_);
 
-  // go through each object we have seen
-  for (size_t i = 0; i < latest_markers_.size(); i++)
+  if (latest_markers_.size() == 0)
   {
-    // get the TF of the marker in the world
-    ar_track_alvar_msgs::AlvarMarker &m = latest_markers_[i];
-    tf2::Transform t_marker_world = this->tfFromPoseMessage(m.pose.pose);
-
-    // determine which object this is
-    string &object = mappings_[m.id];
-
-    // check for the each placement surface
-    bool surface_found = false;
-    for (size_t j = 0; j < surfaces_.size() && !surface_found; j++)
+    ROS_WARN("No markers detected at time of snapshot.");
+  } else
+  {
+    // go through each object we have seen
+    for (size_t i = 0; i < latest_markers_.size(); i++)
     {
-      // transform the marker into the surface frame
-      Surface &s = surfaces_[j];
-      tf2::Transform t_surface_world = this->tfFromTFMessage(static_tfs_[s.getFrame()].transform);
-      tf2::Transform t_marker_surface = t_surface_world.inverseTimes(t_marker_world);
+      // get the TF of the marker in the world
+      ar_track_alvar_msgs::AlvarMarker &m = latest_markers_[i];
+      tf2::Transform t_marker_world = this->tfFromPoseMessage(m.pose.pose);
 
-      // first check if we are inside that surface's bounding box
-      if ((s.getWidth() / 2.0 >= abs(t_marker_surface.getOrigin().x())) && (s.getHeight() / 2.0 >= abs(t_marker_surface.getOrigin().y())))
+      // determine which object this is
+      string &object = mappings_[m.id];
+
+      // check for the each placement surface
+      bool surface_found = false;
+      for (size_t j = 0; j < surfaces_.size() && !surface_found; j++)
       {
-        // now check if we are close to the actual surface
-        for (size_t k = 0; k < s.getNumPlacementSurfaces() && !surface_found; k++)
+        // transform the marker into the surface frame
+        Surface &s = surfaces_[j];
+        tf2::Transform t_surface_world = this->tfFromTFMessage(static_tfs_[s.getFrame()].transform);
+        tf2::Transform t_marker_surface = t_surface_world.inverseTimes(t_marker_world);
+
+        // first check if we are inside that surface's bounding box
+        if ((s.getWidth() / 2.0 >= abs(t_marker_surface.getOrigin().x())) && (s.getHeight() / 2.0 >= abs(t_marker_surface.getOrigin().y())))
         {
-          double surface_z = static_tfs_[s.getPlacementSurface(k)].transform.translation.z;
-          double marker_z = m.pose.pose.position.z;
-          if (abs(surface_z - marker_z) <= SURFACE_Z_THRESH)
+          // now check if we are close to the actual surface
+          for (size_t k = 0; k < s.getNumPlacementSurfaces() && !surface_found; k++)
           {
-            surface_found = true;
-            ROS_INFO("'%s' is on '%s'", object.c_str(), s.getName().c_str());
+            double surface_z = static_tfs_[s.getPlacementSurface(k)].transform.translation.z;
+            double marker_z = m.pose.pose.position.z;
+            if (abs(surface_z - marker_z) <= SURFACE_Z_THRESH)
+            {
+              surface_found = true;
+              ROS_INFO("'%s' is on '%s'", object.c_str(), s.getName().c_str());
+            }
           }
         }
       }
-    }
 
-    // check for a warning
-    if (!surface_found)
-    {
-      ROS_WARN("Could not determine which surface '%s' is on.", object.c_str());
+      // check for a warning
+      if (!surface_found)
+      {
+        ROS_WARN("Could not determine which surface '%s' is on.", object.c_str());
+      }
     }
   }
 
