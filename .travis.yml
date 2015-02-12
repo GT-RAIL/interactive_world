@@ -21,7 +21,8 @@ install:
   - mkdir -p /tmp/ws/src
   - ln -s `pwd` /tmp/ws/src/package
   - cd /tmp/ws/src
-  - git clone https://github.com/WPI-RAIL/librms.git
+  - git clone https://github.com/sniekum/ar_track_alvar.git -b indigo-devel
+  - git clone https://github.com/sniekum/ar_track_alvar_msgs.git
   - cd ../
   - rosdep install --from-paths src --ignore-src --rosdistro hydro -y
 
