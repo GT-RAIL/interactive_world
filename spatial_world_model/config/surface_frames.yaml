@@ -1,0 +1,9 @@
+- name: "kitchen table"
+  frame: "kitchen_table_link"
+  width: 0.88
+  height: 0.90
+  placement_surfaces:
+    - frame: "kitchen_table_surface_link"
+  pois:
+    - name: "chair"
+      frame: "kitchen_chair_link"

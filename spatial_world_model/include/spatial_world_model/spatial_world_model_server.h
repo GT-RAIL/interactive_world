@@ -1,5 +1,5 @@
-#ifndef SPATIAL_WORLD_MODEL_SERVER_HPP_
-#define SPATIAL_WORLD_MODEL_SERVER_HPP_
+#ifndef SPATIAL_WORLD_MODEL_TRACKER_H_
+#define SPATIAL_WORLD_MODEL_TRACKER_H_
 
 #include <mysql/mysql.h>
 #include <ros/ros.h>

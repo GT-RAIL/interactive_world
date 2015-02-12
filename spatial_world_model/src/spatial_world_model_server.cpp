@@ -1,4 +1,4 @@
-#include <spatial_world_model/spatial_world_model_server.hpp>
+#include <spatial_world_model/spatial_world_model_server.h>
 
 using namespace std;
 
