@@ -36,6 +36,7 @@ private:
   ros::NodeHandle node_;
   ros::Subscriber ar_pose_marker_;
   ros::ServiceServer snapshot_;
+  ros::ServiceClient store_;
   std::vector<Surface> surfaces_;
   std::vector<ar_track_alvar_msgs::AlvarMarker> latest_markers_;
   std::map<uint32_t, std::string> mappings_;

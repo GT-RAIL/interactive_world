@@ -50,16 +50,11 @@ bool spatial_world_model_server::store_observation_cb(interactive_world_msgs::St
   // convert into an SQL statement
   stringstream ss;
   ss << "INSERT INTO `" << SWM_TABLE << "`"
-      << "(`room`, `room_frame_id`, `room_conf`, `surface`, `surface_frame_id`, `surface_conf`, `item`, `item_frame_id`, `item_conf`, `x`, `y`, `z`, `theta`)"
+      << "(`surface`, `placement_surface_frame_id`, `item`, `item_conf`, `x`, `y`, `z`, `theta`)"
       << "VALUES ("
-      << "\"" << req.room << "\", "
-      << "\"" << req.room_frame_id << "\", "
-      << "" << req.room_conf << ", "
       << "\"" << req.surface << "\", "
-      << "\"" << req.surface_frame_id << "\", "
-      << "" << req.surface_conf << ", "
+      << "\"" << req.placement_surface_frame_id << "\", "
       << "\"" << req.item << "\", "
-      << "\"" << req.item_frame_id << "\", "
       << "" << req.item_conf << ", "
       << "" << req.x << ", "
       << "" << req.y << ", "
