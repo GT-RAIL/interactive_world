@@ -1,6 +1,6 @@
 <package>
   <name>interactive_world_msgs</name>
-  <version>0.0.3</version>
+  <version>0.0.4</version>
   <description>Messages Used within the Interactive World</description>
 
   <author email="rctoris@wpi.edu">Russell Toris</author>
