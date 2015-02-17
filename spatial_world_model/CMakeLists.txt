@@ -56,6 +56,7 @@ target_link_libraries(spatial_world_model_tracker
 )
 
 add_dependencies(spatial_world_model_server interactive_world_msgs_gencpp)
+add_dependencies(spatial_world_model_tracker interactive_world_msgs_gencpp)
 
 #############
 ## Install ##
