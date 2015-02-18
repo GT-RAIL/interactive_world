@@ -2,6 +2,11 @@
 Changelog for package spatial_world_model
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.0.5 (2015-02-18)
+------------------
+* missing msg dep added
+* Contributors: Russell Toris
+
 0.0.4 (2015-02-17)
 ------------------
 * missing package added as dep and updates to marker numbers
