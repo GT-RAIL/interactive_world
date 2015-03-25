@@ -1,0 +1,9 @@
+# Define the goal
+uint32[] models  # The model IDs to load from the interactive world database for use in search locations
+string item      # The name of the item to search for
+---
+# Define the result
+bool success    # If the item was found
+---
+# Define a feedback message
+string message  # The current state message

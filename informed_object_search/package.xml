@@ -1,0 +1,27 @@
+<package>
+  <name>informed_object_search</name>
+  <version>0.0.5</version>
+  <description>Object Search via the Interactive World Data</description>
+
+  <author email="rctoris@wpi.edu">Russell Toris</author>
+  <maintainer email="rctoris@wpi.edu">Russell Toris</maintainer>
+  
+  <url type="website">http://ros.org/wiki/search_and_retrieve</url>
+  <url type="bugtracker">https://github.com/WPI-RAIL/interactive_world/issues</url>
+  <url type="repository">https://github.com/WPI-RAIL/interactive_world</url>
+
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>actionlib</build_depend>
+  <build_depend>boost</build_depend>
+  <build_depend>interactive_world_msgs</build_depend>
+  <build_depend>roscpp</build_depend>
+
+  <run_depend>actionlib</run_depend>
+  <run_depend>boost</run_depend>
+  <run_depend>interactive_world_msgs</run_depend>
+  <run_depend>interactive_world_tools</run_depend>
+  <run_depend>roscpp</run_depend>
+</package>

@@ -1,0 +1,10 @@
+# Define the goal
+string surface             # The name of the surface to drive to
+string poi                 # (Optional) The point of interest to drive closest to (i.e., for multiple nav locations)
+geometry_msgs/Point point  # (Optional) The point to drive closest to (i.e., for multiple nav locations)
+---
+# Define the result
+bool success               # If navigation was successful
+---
+# Define a feedback message
+string message             # The current state message

@@ -1,0 +1,23 @@
+<!--
+   Author: Russell Toris, Worcester Polytechnic Institute
+  Version: March 18, 2015
+-->
+
+<launch>
+  <!-- RMS Connection Params -->
+  <arg name="host" default="robotsfor.me" />
+
+  <!-- Model Fetcher Node -->
+  <node name="interactive_world_model_fetcher" pkg="interactive_world_tools" type="interactive_world_model_fetcher"
+        respawn="false" output="screen">
+    <param name="host" value="$(arg host)" />
+  </node>
+
+  <!-- High Level Node -->
+  <node name="high_level_action_server" pkg="interactive_world_tools" type="high_level_action_server" respawn="false"
+        output="screen" />
+
+  <!-- Object Search Node -->
+  <node name="informed_object_search" pkg="informed_object_search" type="informed_object_search" respawn="false"
+        output="screen" />
+</launch>

@@ -1,0 +1,9 @@
+# Define the goal
+string item     # The name of the item to search for
+string surface  # The name of the surface to search
+---
+# Define the result
+bool success    # If the item was found
+---
+# Define a feedback message
+string message  # The current state message

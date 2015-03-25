@@ -1,0 +1,39 @@
+- name: "Kitchen"
+  frame_id: "ilab"
+  surfaces:
+    - name: "Kitchen Table"
+      frame_id: "kitchen_table_link"
+      width: 0.880
+      height: 0.900
+      aliases: ["Dining Table with Chairs", "Dining Table"]
+      placement_surfaces:
+        - frame_id: "kitchen_table_surface_link"
+          nav_frame_id: "kitchen_table_nav_goal_link"
+      pois:
+        - name: "Chair"
+          frame_id: "kitchen_chair_link"
+    - name: "Kitchen Counter"
+      frame_id: "kitchen_counter_link"
+      width: 2.455
+      height: 0.645
+      aliases: ["Counter", "Sink", "Sink Unit"]
+      placement_surfaces:
+        - frame_id: "kitchen_counter_right_surface_link"
+          nav_frame_id: "kitchen_counter_right_nav_goal_link"
+        - frame_id: "kitchen_counter_left_surface_link"
+          nav_frame_id: "kitchen_counter_left_nav_goal_link"
+        - frame_id: "sink_link"
+          nav_frame_id: "sink_nav_goal_link"
+      pois:
+        - name: "Sink"
+          frame_id: "sink_link"
+- name: "Living Room"
+  frame_id: "ilab"
+  surfaces:
+    - name: "Coffee Table"
+      frame_id: "coffee_table_link"
+      width: 1.220
+      height: 0.505
+      placement_surfaces:
+        - frame_id: "coffee_table_surface_link"
+          nav_frame_id: "coffee_table_nav_goal_link"
