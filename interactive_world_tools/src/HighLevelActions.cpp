@@ -154,6 +154,18 @@ void HighLevelActions::driveAndSearch(const interactive_world_msgs::DriveAndSear
     {
       const PlacementSurface &ps = cur->getPlacementSurface(j);
 
+      // retract the arm if we are going to be searching
+//      wpi_jaco_msgs::HomeArmGoal arm_goal;
+//      arm_goal.retract = true;
+//      // TODO use higher level version
+//      nav_goal.target_pose.header.frame_id = frame_id;
+//      nav_goal.target_pose.pose.orientation.w = QUATERNION_90_ROTATE;
+//      nav_goal.target_pose.pose.orientation.z = QUATERNION_90_ROTATE;
+//      nav_ac_.sendGoal(nav_goal);
+//      bool completed = nav_ac_.waitForResult(ac_wait_time_);
+//      bool succeeded = (nav_ac_.getState() == actionlib::SimpleClientGoalState::SUCCEEDED);
+//      return completed && succeeded;
+
       // attempt to drive
       feedback.message = "Attempting to drive to " + ps.getNavFrameID();
       drive_and_search_as_.publishFeedback(feedback);
@@ -186,6 +198,8 @@ void HighLevelActions::driveAndSearch(const interactive_world_msgs::DriveAndSear
       }
     }
   }
+
+  drive_and_search_as_.setSucceeded(result, "Could not locate object.");
 }
 
 void HighLevelActions::driveToSurface(const interactive_world_msgs::DriveToSurfaceGoalConstPtr &goal)

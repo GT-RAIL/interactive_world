@@ -7,6 +7,7 @@ project(interactive_world_tools)
 find_package(catkin REQUIRED COMPONENTS
   actionlib
   carl_dynamixel
+  carl_moveit
   interactive_world_msgs
   geometry_msgs
   move_base_msgs
@@ -72,7 +73,7 @@ target_link_libraries(high_level_action_server
 
 ## Add message build dependencies (needed for source build)
 add_dependencies(interactive_world_model_fetcher interactive_world_msgs_gencpp)
-add_dependencies(high_level_action_server interactive_world_msgs_gencpp)
+add_dependencies(high_level_action_server interactive_world_msgs_gencpp wpi_jaco_msgs_gencpp)
 
 #############
 ## Install ##

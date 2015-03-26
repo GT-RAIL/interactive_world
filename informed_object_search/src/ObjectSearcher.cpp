@@ -12,6 +12,7 @@
 #include <boost/algorithm/string.hpp>
 #include <informed_object_search/ObjectSearcher.h>
 #include <interactive_world_msgs/LoadModels.h>
+#include <map>
 
 using namespace std;
 using namespace rail::interactive_world;
@@ -50,6 +51,7 @@ void ObjectSearcher::objectSearch(const interactive_world_msgs::ObjectSearchGoal
   feedback.message = "Requesting trainied models...";
   as_.publishFeedback(feedback);
 
+  // grab each model from the database
   vector<interactive_world_msgs::Model> models;
   for (size_t i = 0; i < goal->models.size(); i++)
   {
@@ -63,8 +65,9 @@ void ObjectSearcher::objectSearch(const interactive_world_msgs::ObjectSearchGoal
       for (size_t j = 0; j < cur.size(); j++)
       {
         // check if the names match and restrict search to surfaces
-        string check = boost::to_upper_copy(cur[j].placement.item.name);
-        if (check == item && cur[j].placement.surface.name.size() > 0)
+        string placement_item = boost::to_upper_copy(cur[j].placement.item.name);
+        string placement_reference = boost::to_upper_copy(cur[j].placement.reference_frame_id);
+        if (cur[j].placement.surface.name.size() > 0 && (placement_item == item || placement_reference == item))
         {
           models.push_back(cur[j]);
         }
@@ -77,50 +80,62 @@ void ObjectSearcher::objectSearch(const interactive_world_msgs::ObjectSearchGoal
     }
   }
 
-  // search for the highest confidence
-  feedback.message = "Starting with highest confidence model...";
-  as_.publishFeedback(feedback);
+  // tally up confidences for each surface
+  map<string, double> confidences;
+  for (size_t i = 0; i < models.size(); i++)
+  {
+    // get the current surface name
+    const interactive_world_msgs::Model &m = models[i];
+    string surface_name = m.placement.surface.name;
+    if (confidences.find(surface_name) == confidences.end())
+    {
+      confidences[surface_name] = 0.0;
+    }
 
-  while (!models.empty())
+    // add to the confidence
+    confidences[surface_name] += m.decision_value;
+  }
+
+  while (!confidences.empty())
   {
     // check for the current best
-    double highest = -numeric_limits<double>::infinity();
-    size_t best = 0;
-    for (size_t i = 0; i < models.size(); i++)
+    double lowest = numeric_limits<double>::infinity();
+    string best_surface;
+    for (map<string, double>::iterator iter = confidences.begin(); iter != confidences.end(); ++iter)
     {
-      if (models[i].decision_value > highest)
+      string key = iter->first;
+      double value = iter->second;
+      if (value < lowest)
       {
-        best = i;
-        highest = models[i].decision_value;
+        best_surface = key;
+        lowest = value;
       }
     }
 
-    cout << "SEARCHING " << models[best].placement.surface.name << endl;
+    // search for the highest confidence
+    feedback.message = "Searching " + best_surface;
+    as_.publishFeedback(feedback);
+
+    // perform a higher level search request
     interactive_world_msgs::DriveAndSearchGoal search_goal;
-    // drive to the nav frame
     search_goal.item = item;
-    search_goal.surface = models[best].placement.surface.name;
-    // TODO do not rotate
+    search_goal.surface = best_surface;
     search_ac_.sendGoal(search_goal);
     bool completed = search_ac_.waitForResult(ac_wait_time_);
     bool succeeded = (search_ac_.getState() == actionlib::SimpleClientGoalState::SUCCEEDED);
-    if (!completed || !succeeded)
+    bool success = search_ac_.getResult()->success;
+    if (!completed || !succeeded || !success)
     {
-      as_.setSucceeded(result, "Could not search.");
-      cout << "no, no no no." << endl;
-      return;
-    } else {
-      //TODO
-      cout << "SWEET" << endl;
-//      result.success = true;
-//      as_.setSucceeded(result, "Success!");
-//      return;
+      feedback.message = "Object not found on " + search_goal.surface;
+      as_.publishFeedback(feedback);
+    } else
+    {
+      // TODO object found
     }
 
-    models.erase(models.begin() + best);
+    confidences.erase(best_surface);
   }
 
   // success
-  result.success = true;
-  as_.setSucceeded(result, "Success!");
+  as_.setSucceeded(result, "Object search failed.");
 }

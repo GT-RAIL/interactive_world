@@ -20,6 +20,7 @@
 #include <move_base_msgs/MoveBaseAction.h>
 #include <ros/ros.h>
 #include <tf2/LinearMath/Transform.h>
+//#include <wpi_jaco_msgs/HomeArmAction.h>
 
 #include <boost/thread/mutex.hpp>
 
@@ -112,6 +113,8 @@ private:
   actionlib::SimpleActionServer<interactive_world_msgs::DriveToSurfaceAction> drive_to_surface_as_;
   /*! The navigation action client. */
   actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> nav_ac_;
+  /*! The home arm action client. */
+  //actionlib::SimpleActionClient<wpi_jaco_msgs::HomeArmAction> home_arm_ac_;
   /*! The camera and segmentation service client. */
   ros::ServiceClient look_at_frame_srv_, segment_srv_;
   /*! The action client timeout. */

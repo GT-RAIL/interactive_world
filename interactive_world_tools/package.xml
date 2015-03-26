@@ -17,6 +17,7 @@
   <build_depend>actionlib</build_depend>
   <build_depend>boost</build_depend>
   <build_depend>carl_dynamixel</build_depend>
+  <build_depend>carl_moveit</build_depend>
   <build_depend>curl</build_depend>
   <build_depend>geometry_msgs</build_depend>
   <build_depend>interactive_world_msgs</build_depend>
@@ -33,6 +34,7 @@
   <run_depend>actionlib</run_depend>
   <run_depend>boost</run_depend>
   <run_depend>carl_dynamixel</run_depend>
+  <run_depend>carl_moveit</run_depend>
   <run_depend>curl</run_depend>
   <run_depend>geometry_msgs</run_depend>
   <run_depend>interactive_world_msgs</run_depend>
