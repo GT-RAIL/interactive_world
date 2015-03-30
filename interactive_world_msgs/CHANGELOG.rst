@@ -2,6 +2,11 @@
 Changelog for package interactive_world_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.0.6 (2015-03-30)
+------------------
+* higher level action server started
+* Contributors: Russell Toris
+
 0.0.5 (2015-02-18)
 ------------------
 

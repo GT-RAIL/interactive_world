@@ -2,6 +2,12 @@
 Changelog for package interactive_world_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.0.6 (2015-03-30)
+------------------
+* travis fix
+* higher level action server started
+* Contributors: Russell Toris
+
 0.0.5 (2015-02-18)
 ------------------
 
