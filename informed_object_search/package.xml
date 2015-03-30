@@ -1,6 +1,6 @@
 <package>
   <name>informed_object_search</name>
-  <version>0.0.5</version>
+  <version>0.0.6</version>
   <description>Object Search via the Interactive World Data</description>
 
   <author email="rctoris@wpi.edu">Russell Toris</author>
