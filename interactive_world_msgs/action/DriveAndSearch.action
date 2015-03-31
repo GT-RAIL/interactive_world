@@ -1,9 +1,10 @@
 # Define the goal
-string item     # The name of the item to search for
-string surface  # The name of the surface to search
+string item                                         # The name of the item to search for
+string surface                                      # The name of the surface to search
 ---
 # Define the result
-bool success    # If the item was found
+bool success                                        # If the item was found
+rail_manipulation_msgs/SegmentedObjectList objects  # The corresponding objects
 ---
 # Define a feedback message
-string message  # The current state message
+string message                                      # The current state message

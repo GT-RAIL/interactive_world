@@ -13,14 +13,15 @@
 
 #include <actionlib/client/simple_action_client.h>
 #include <actionlib/server/simple_action_server.h>
+#include <carl_moveit/ArmAction.h>
 #include <geometry_msgs/TransformStamped.h>
 #include <interactive_world_msgs/DriveAndSearchAction.h>
 #include <interactive_world_msgs/DriveToSurfaceAction.h>
 #include <interactive_world_tools/World.h>
 #include <move_base_msgs/MoveBaseAction.h>
+#include <rail_manipulation_msgs/SegmentedObjectList.h>
 #include <ros/ros.h>
 #include <tf2/LinearMath/Transform.h>
-//#include <wpi_jaco_msgs/HomeArmAction.h>
 
 #include <boost/thread/mutex.hpp>
 
@@ -99,6 +100,15 @@ private:
    */
   tf2::Transform tfFromTFMessage(const geometry_msgs::Transform &tf);
 
+  /*!
+   * \brief Store the latest recognized objects.
+   *
+   * Stores the latest recognized objects from the segmentation topic.
+   *
+   * \param objects The latest recognized objects.
+   */
+  void recognizedObjectsCallback(const rail_manipulation_msgs::SegmentedObjectList &objects);
+
   /*! The okay check flags. */
   bool debug_, okay_;
   /*! The global and private ROS node handles. */
@@ -114,13 +124,19 @@ private:
   /*! The navigation action client. */
   actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> nav_ac_;
   /*! The home arm action client. */
-  //actionlib::SimpleActionClient<wpi_jaco_msgs::HomeArmAction> home_arm_ac_;
+  actionlib::SimpleActionClient<carl_moveit::ArmAction> home_arm_ac_;
   /*! The camera and segmentation service client. */
   ros::ServiceClient look_at_frame_srv_, segment_srv_;
+  /*! The recognized objects topic. */
+  ros::Subscriber recognized_objects_sub_;
   /*! The action client timeout. */
   ros::Duration ac_wait_time_;
-  /*! The drive action client mutex */
-  boost::mutex nav_mutex_;
+  /*! The various mutexes used. */
+  boost::mutex nav_mutex_, recognized_objects_mutex_;
+  /*! The latest recognized objects */
+  rail_manipulation_msgs::SegmentedObjectList recognized_objects_;
+  /*! A counter for the number of recognized object messages that have come in. */
+  uint32_t recognized_objects_counter_;
 };
 
 }

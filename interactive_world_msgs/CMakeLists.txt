@@ -8,6 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
   actionlib_msgs
   geometry_msgs
   message_generation
+  rail_manipulation_msgs
 )
 
 #######################################
@@ -47,6 +48,7 @@ add_action_files(FILES
 generate_messages(DEPENDENCIES
   actionlib_msgs
   geometry_msgs
+  rail_manipulation_msgs
 )
 
 ###################################################

@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   interactive_world_msgs
   geometry_msgs
   move_base_msgs
+  rail_manipulation_msgs
   roscpp
   roslib
   std_srvs

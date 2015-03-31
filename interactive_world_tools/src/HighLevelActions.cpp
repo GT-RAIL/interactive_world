@@ -21,6 +21,7 @@ using namespace rail::interactive_world;
 
 HighLevelActions::HighLevelActions()
     : private_node_("~"), nav_ac_("/move_base", true), ac_wait_time_(AC_WAIT_TIME),
+      home_arm_ac_("/carl_moveit_wrapper/common_actions/arm_action", true),
       drive_and_search_as_(
           private_node_, "drive_and_search", boost::bind(&HighLevelActions::driveAndSearch, this, _1), false
       ),
@@ -29,6 +30,7 @@ HighLevelActions::HighLevelActions()
       )
 {
   // set defaults
+  recognized_objects_counter_ = 0;
   string world_file(ros::package::getPath("interactive_world_tools") + "/config/world.yaml");
   string fixed_frame("map");
 
@@ -39,6 +41,8 @@ HighLevelActions::HighLevelActions()
   // setup services and topic
   look_at_frame_srv_ = node_.serviceClient<carl_dynamixel::LookAtFrame>("/asus_controller/look_at_frame");
   segment_srv_ = node_.serviceClient<std_srvs::Empty>("/rail_segmentation/segment");
+  recognized_objects_sub_ = node_.subscribe("/object_recognition_listener/recognized_objects", 1,
+      &HighLevelActions::recognizedObjectsCallback, this);
 
 // check the YAML version
 #ifdef YAMLCPP_GT_0_5_0
@@ -127,9 +131,9 @@ bool HighLevelActions::okay() const
 void HighLevelActions::driveAndSearch(const interactive_world_msgs::DriveAndSearchGoalConstPtr &goal)
 {
   // ignore case
-  string item = boost::to_upper_copy(goal->item);
+  string item_name = boost::to_upper_copy(goal->item);
   string surface_name = boost::to_upper_copy(goal->surface);
-  ROS_INFO("Searching for '%s' on the '%s'...", item.c_str(), surface_name.c_str());
+  ROS_INFO("Searching for '%s' on the '%s'...", item_name.c_str(), surface_name.c_str());
 
   interactive_world_msgs::DriveAndSearchFeedback feedback;
   interactive_world_msgs::DriveAndSearchResult result;
@@ -155,16 +159,17 @@ void HighLevelActions::driveAndSearch(const interactive_world_msgs::DriveAndSear
       const PlacementSurface &ps = cur->getPlacementSurface(j);
 
       // retract the arm if we are going to be searching
-//      wpi_jaco_msgs::HomeArmGoal arm_goal;
-//      arm_goal.retract = true;
-//      // TODO use higher level version
-//      nav_goal.target_pose.header.frame_id = frame_id;
-//      nav_goal.target_pose.pose.orientation.w = QUATERNION_90_ROTATE;
-//      nav_goal.target_pose.pose.orientation.z = QUATERNION_90_ROTATE;
-//      nav_ac_.sendGoal(nav_goal);
-//      bool completed = nav_ac_.waitForResult(ac_wait_time_);
-//      bool succeeded = (nav_ac_.getState() == actionlib::SimpleClientGoalState::SUCCEEDED);
-//      return completed && succeeded;
+      carl_moveit::ArmGoal arm_goal;
+      arm_goal.action = carl_moveit::ArmGoal::RETRACT;
+      home_arm_ac_.sendGoal(arm_goal);
+      bool completed = home_arm_ac_.waitForResult(ac_wait_time_);
+      bool succeeded = (home_arm_ac_.getState() == actionlib::SimpleClientGoalState::SUCCEEDED);
+      bool success = home_arm_ac_.getResult()->success;
+      if (!completed || !succeeded || !success)
+      {
+        ROS_ERROR("Could not retract arm during search.");
+        drive_and_search_as_.setSucceeded(result, "Could not retract arm during search.");
+      }
 
       // attempt to drive
       feedback.message = "Attempting to drive to " + ps.getNavFrameID();
@@ -186,15 +191,57 @@ void HighLevelActions::driveAndSearch(const interactive_world_msgs::DriveAndSear
         continue;
       }
 
+      // check how many recognized objects we have so far (a segment request will first send an empty list)
+      uint32_t counter;
+      {
+        boost::mutex::scoped_lock lock(recognized_objects_mutex_);
+        counter = recognized_objects_counter_;
+      }
+
       // perform a segmentation request
-      feedback.message = "Attempting to segment the surface";
+      feedback.message = "Attempting to segment the surface.";
       drive_and_search_as_.publishFeedback(feedback);
       std_srvs::Empty segment;
-      segment_srv_.call(segment);
       if (!segment_srv_.call(segment))
       {
         ROS_WARN("Could not segment surface, will continue the search elsewhere.");
         continue;
+      }
+
+      // spin and wait
+      feedback.message = "Waiting for recognition results.";
+      drive_and_search_as_.publishFeedback(feedback);
+      bool finished = false;
+      while (!finished)
+      {
+        {
+          boost::mutex::scoped_lock lock(recognized_objects_mutex_);
+          finished = recognized_objects_counter_ == (counter + 2);
+        }
+      }
+
+      // parse the recognition results
+      boost::mutex::scoped_lock lock(recognized_objects_mutex_);
+      for (size_t i = 0; i < recognized_objects_.objects.size(); i++)
+      {
+        if (recognized_objects_.objects[i].recognized)
+        {
+          string cur_name = boost::to_upper_copy(recognized_objects_.objects[i].name);
+          // check for a name match
+          if (cur_name == item_name)
+          {
+            // found at least one match
+            result.success = true;
+            result.objects.objects.push_back(recognized_objects_.objects[i]);
+          }
+        }
+      }
+
+      // check if we found something in this zone
+      if (result.success)
+      {
+        drive_and_search_as_.setSucceeded(result, "Object located.");
+        return;
       }
     }
   }
@@ -317,4 +364,13 @@ tf2::Transform HighLevelActions::tfFromTFMessage(const geometry_msgs::Transform 
   // construct and return
   return tf2::Transform(tf2::Quaternion(tf.rotation.x, tf.rotation.y, tf.rotation.z, tf.rotation.w),
       tf2::Vector3(tf.translation.x, tf.translation.y, tf.translation.z));
+}
+
+void HighLevelActions::recognizedObjectsCallback(const rail_manipulation_msgs::SegmentedObjectList &objects)
+{
+  // lock for the list
+  boost::mutex::scoped_lock lock(recognized_objects_mutex_);
+
+  recognized_objects_ = objects;
+  recognized_objects_counter_++;
 }
