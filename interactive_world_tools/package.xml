@@ -1,6 +1,6 @@
 <package>
   <name>interactive_world_tools</name>
-  <version>0.0.6</version>
+  <version>0.0.7</version>
   <description>Tools and Modules for the Interactive World Models</description>
 
   <author email="rctoris@wpi.edu">Russell Toris</author>
