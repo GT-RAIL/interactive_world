@@ -2,6 +2,11 @@
 Changelog for package interactive_world_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.0.7 (2015-03-31)
+------------------
+* added tuck arm action
+* Contributors: Russell Toris
+
 0.0.6 (2015-03-30)
 ------------------
 * travis fix
