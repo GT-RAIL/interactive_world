@@ -11,66 +11,11 @@ Tracker::Tracker()
 {
   ros::NodeHandle private_node("~");
 
-  // grab params
-  private_node.param("fixed_frame", fixed_frame_, string("map"));
-
   // grab YAML files
   string mapping_file;
   private_node.param("mapping_config", mapping_file, ros::package::getPath("spatial_world_model") + "/config/mapping.yaml");
   string surface_frames_file;
   private_node.param("surface_frames", surface_frames_file, ros::package::getPath("spatial_world_model") + "/config/surface_frames.yaml");
-
-#ifdef YAMLCPP_GT_0_5_0
-  ROS_INFO("Parsing spatial world model tracking configurations...");
-
-  // used to gather static TFs
-  ros::Duration cache_time(TF_CACHE_TIME);
-  tf2_ros::Buffer tf_buffer(cache_time);
-  tf2_ros::TransformListener tf_listener(tf_buffer);
-
-  // parse the object/marker mappings
-  YAML::Node mapping_config = YAML::LoadFile(mapping_file);
-  for (size_t i = 0; i < mapping_config.size(); i++)
-  {
-    // extract the mapping
-    mappings_[mapping_config[i]["marker_id"].as<uint32_t>()] = mapping_config[i]["object_name"].as<string>();
-  }
-
-  // parse the surface frame groundings
-  YAML::Node surface_frames_config = YAML::LoadFile(surface_frames_file);
-  for (size_t i = 0; i < surface_frames_config.size(); i++)
-  {
-    // extract the frame information
-    YAML::Node cur = surface_frames_config[i];
-    Surface surface(cur["name"].as<string>(), cur["frame"].as<string>(), cur["width"].as<double>(), cur["height"].as<double>());
-    // get the static TF information
-    static_tfs_[surface.getFrame()] = tf_buffer.lookupTransform(fixed_frame_, surface.getFrame(), ros::Time(0), ros::Duration(TF_CACHE_TIME + 1));
-    // grab placement surfaces
-    YAML::Node placement_surfaces = cur["placement_surfaces"];
-    for (size_t j = 0; j < placement_surfaces.size(); j++)
-    {
-      // store the placement surface
-      surface.addPlacementSurface(placement_surfaces[j]["frame"].as<string>());
-      // get the static TF information
-      static_tfs_[surface.getPlacementSurface(j)] = tf_buffer.lookupTransform(fixed_frame_, surface.getPlacementSurface(j), ros::Time(0), ros::Duration(TF_CACHE_TIME + 1));
-    }
-    // grab POIs
-    YAML::Node pois = cur["pois"];
-    for (size_t j = 0; j < pois.size(); j++)
-    {
-      // store the POI
-      surface.addPOI(PointOfInterest(pois[j]["name"].as<string>(), pois[j]["frame"].as<string>()));
-      // get the static TF information
-      static_tfs_[surface.getPOI(j).getFrame()] = tf_buffer.lookupTransform(fixed_frame_, surface.getPOI(j).getFrame(), ros::Time(0), ros::Duration(TF_CACHE_TIME + 1));
-    }
-    surfaces_.push_back(surface);
-
-    // get the static TF information
-    static_tfs_[surface.getFrame()] = tf_buffer.lookupTransform(fixed_frame_, surface.getFrame(), ros::Time(0), ros::Duration(TF_CACHE_TIME + 1));
-  }
-#else
-  ROS_WARN("WARNING: Unsupported version of YAML. Config files not parsed.");
-#endif
 
   // setup topics and services
   ar_pose_marker_ = node_.subscribe("/ar_pose_marker", 1, &Tracker::markerCallback, this);

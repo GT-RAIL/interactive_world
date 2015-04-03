@@ -4,9 +4,7 @@ project(spatial_world_model)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS roscpp interactive_world_msgs ar_track_alvar_msgs roslib tf2 tf2_ros geometry_msgs std_srvs)
-find_package(PkgConfig)
-find_package(Boost REQUIRED COMPONENTS thread)
+find_package(catkin REQUIRED COMPONENTS rail_manipulation_msgs roscpp interactive_world_msgs ar_track_alvar_msgs roslib tf2 tf2_ros geometry_msgs std_srvs)
 
 ###################################################
 ## Declare things to be passed to other projects ##
@@ -24,46 +22,37 @@ catkin_package(
 ## Build ##
 ###########
 
-## Check for what version of YAML we have
-pkg_check_modules(YAML_CPP yaml-cpp)
-if(${YAML_CPP_VERSION} VERSION_GREATER 0.5)
-  add_definitions(-DYAMLCPP_GT_0_5_0)
-endif()
-
 ## Specify additional locations of header files
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
-  ${boost_INCLUDE_DIRS}
-  ${YAML_CPP_INCLUDE_DIRS}
 )
-link_directories(${YAML_CPP_LIBRARY_DIRS})
 
 ## Declare a cpp executable
 add_executable(spatial_world_model_server src/spatial_world_model_server.cpp)
-add_executable(spatial_world_model_tracker src/nodes/spatial_world_model_tracker.cpp src/Tracker.cpp)
+add_executable(recognized_objects_listener
+  nodes/recognized_objects_listener.cpp
+  src/RecognizedObjectsListener.cpp
+)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(spatial_world_model_server
   ${catkin_LIBRARIES}
   mysqlclient
 )
-
-target_link_libraries(spatial_world_model_tracker
+target_link_libraries(recognized_objects_listener
   ${catkin_LIBRARIES}
-  ${boost_LIBRARIES}
-  yaml-cpp
 )
 
 add_dependencies(spatial_world_model_server interactive_world_msgs_gencpp)
-add_dependencies(spatial_world_model_tracker interactive_world_msgs_gencpp)
+add_dependencies(recognized_objects_listener interactive_world_msgs_gencpp)
 
 #############
 ## Install ##
 #############
 
 ## Mark executables and/or libraries for installation
-install(TARGETS spatial_world_model_server spatial_world_model_tracker
+install(TARGETS spatial_world_model_server recognized_objects_listener
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

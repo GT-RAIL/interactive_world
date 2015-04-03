@@ -18,12 +18,10 @@
   <build_depend>libmysqlclient-dev</build_depend>
   <build_depend>interactive_world_msgs</build_depend>
   <build_depend>ar_track_alvar_msgs</build_depend>
+  <build_depend>rail_manipulation_msgs</build_depend>
   <build_depend>tf2</build_depend>
   <build_depend>tf2_ros</build_depend>
-  <build_depend>yaml-cpp</build_depend>
-  <build_depend>pkg-config</build_depend>
   <build_depend>roslib</build_depend>
-  <build_depend>boost</build_depend>
   <build_depend>geometry_msgs</build_depend>
   <build_depend>std_srvs</build_depend>
 
@@ -32,11 +30,10 @@
   <run_depend>interactive_world_msgs</run_depend>
   <run_depend>ar_track_alvar</run_depend>
   <run_depend>ar_track_alvar_msgs</run_depend>
+  <run_depend>rail_manipulation_msgs</run_depend>
   <run_depend>tf2</run_depend>
   <run_depend>tf2_ros</run_depend>
-  <run_depend>yaml-cpp</run_depend>
   <run_depend>roslib</run_depend>
-  <run_depend>boost</run_depend>
   <run_depend>geometry_msgs</run_depend>
   <run_depend>std_srvs</run_depend>
 </package>
