@@ -2,6 +2,9 @@
 Changelog for package interactive_world_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.0.10 (2015-04-10)
+-------------------
+
 0.0.9 (2015-04-10)
 ------------------
 * temporal search added
