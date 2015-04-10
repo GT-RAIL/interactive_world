@@ -2,6 +2,11 @@
 Changelog for package spatial_world_model
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.0.9 (2015-04-10)
+------------------
+* temporal search added
+* Contributors: Russell Toris
+
 0.0.8 (2015-04-03)
 ------------------
 
