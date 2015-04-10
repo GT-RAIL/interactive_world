@@ -1,0 +1,10 @@
+string item
+---
+string[] surfaces
+string[] placement_surface_frame_ids
+float64[] item_confs
+float64[] xs
+float64[] ys
+float64[] zs
+float64[] thetas
+time[] times

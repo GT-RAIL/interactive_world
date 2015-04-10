@@ -6,6 +6,7 @@
 <launch>
   <!-- RMS Connection Params -->
   <arg name="host" default="robotsfor.me" />
+  <arg name="password" default="$(env RMS_PW)" />
 
   <!-- Model Fetcher Node -->
   <node name="interactive_world_model_fetcher" pkg="interactive_world_tools" type="interactive_world_model_fetcher"
@@ -20,4 +21,12 @@
   <!-- Object Search Node -->
   <node name="informed_object_search" pkg="informed_object_search" type="informed_object_search" respawn="false"
         output="screen" />
+
+  <!-- Spatial World Model -->
+  <node name="spatial_world_model_server" pkg="spatial_world_model" type="spatial_world_model_server"
+        output="screen">
+    <param name="host" value="$(arg host)" />
+    <param name="password" value="$(arg password)" />
+  </node>
+  <node name="recognized_objects_listener" pkg="spatial_world_model" type="recognized_objects_listener" output="screen" />
 </launch>

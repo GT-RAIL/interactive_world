@@ -31,10 +31,13 @@ add_message_files(FILES
 
 ## Generate services in the 'srv' folder
 add_service_files(FILES
+  FindObservations.srv
+  FindSurface.srv
   LearnModels.srv
   LoadModels.srv
   Parse.srv
   StoreObservation.srv
+  TransformToSurfaceFrame.srv
 )
 
 ## Generate actions in the 'action' folder

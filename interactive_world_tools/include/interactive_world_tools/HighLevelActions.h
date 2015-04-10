@@ -17,11 +17,14 @@
 #include <geometry_msgs/TransformStamped.h>
 #include <interactive_world_msgs/DriveAndSearchAction.h>
 #include <interactive_world_msgs/DriveToSurfaceAction.h>
+#include <interactive_world_msgs/FindSurface.h>
+#include <interactive_world_msgs/TransformToSurfaceFrame.h>
 #include <interactive_world_tools/World.h>
 #include <move_base_msgs/MoveBaseAction.h>
 #include <rail_manipulation_msgs/SegmentedObjectList.h>
 #include <ros/ros.h>
 #include <tf2/LinearMath/Transform.h>
+#include <tf2_ros/transform_listener.h>
 
 #include <boost/thread/mutex.hpp>
 
@@ -43,6 +46,8 @@ public:
   static const int AC_WAIT_TIME = 60;
   /*! Constant used for the W and Z components of a quaternion for a 90 degree rotation about the Z axis. */
   static const double QUATERNION_90_ROTATE = 0.7071067811865476;
+  /*! Threshold on the Z axis for something being on a surface. */
+  static const double SURFACE_Z_THRESH = 0.1;
 
   /*!
    * \brief Create a HighLevelActions and associated ROS information.
@@ -62,6 +67,21 @@ public:
   bool okay() const;
 
 private:
+  /*!
+   * \brief Callback for the find surface server.
+   *
+   * Searches for the surface in the world that the given point is on (within some threshold).
+   *
+   * \param req The request with the point to check.
+   * \param resp The response with the surface name and frame (if any).
+   * \return True if the call was successful.
+   */
+  bool findSurfaceCallback(interactive_world_msgs::FindSurface::Request &req,
+      interactive_world_msgs::FindSurface::Response &resp);
+
+  bool transformToSurfaceFrame(interactive_world_msgs::TransformToSurfaceFrame::Request &req,
+      interactive_world_msgs::TransformToSurfaceFrame::Response &resp);
+
   /*!
    * \brief Callback for the object search action server.
    *
@@ -101,6 +121,16 @@ private:
   tf2::Transform tfFromTFMessage(const geometry_msgs::Transform &tf);
 
   /*!
+   * \brief Create a new tf2 transform from a ROS message.
+   *
+   * Creates and returns a new TF2 transform object from a ROS message.
+   *
+   * \param pose The ROS pose message to take values from.
+   * \return The new tf2 transform.
+   */
+  tf2::Transform tfFromPoseMessage(const geometry_msgs::Pose &pose);
+
+  /*!
    * \brief Store the latest recognized objects.
    *
    * Stores the latest recognized objects from the segmentation topic.
@@ -113,6 +143,8 @@ private:
   bool debug_, okay_;
   /*! The global and private ROS node handles. */
   ros::NodeHandle node_, private_node_;
+  /*! The fixed frame. */
+  std::string fixed_frame_;
   /*! The world configuration. */
   World world_;
   /*! Static transforms in the world. */
@@ -125,8 +157,10 @@ private:
   actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> nav_ac_;
   /*! The home arm action client. */
   actionlib::SimpleActionClient<carl_moveit::ArmAction> home_arm_ac_;
-  /*! The camera and segmentation service client. */
+  /*! The camera and segmentation service clients. */
   ros::ServiceClient look_at_frame_srv_, segment_srv_;
+  /*! The find surface server. */
+  ros::ServiceServer find_surface_srv_, transform_to_surface_frame_srv_;
   /*! The recognized objects topic. */
   ros::Subscriber recognized_objects_sub_;
   /*! The action client timeout. */

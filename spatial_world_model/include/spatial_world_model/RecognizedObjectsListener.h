@@ -3,7 +3,7 @@
 
 #include <ros/ros.h>
 #include <rail_manipulation_msgs/SegmentedObjectList.h>
-#include <interactive_world_msgs/StoreObservation.h>
+#include <tf2_ros/transform_listener.h>
 
 namespace rail
 {
@@ -20,8 +20,8 @@ private:
   ros::NodeHandle node_;
   /*! The recognized objects topic. */
   ros::Subscriber recognized_objects_sub_;
-  /*! The store observation service. */
-  ros::ServiceClient store_observation_srv_;
+  /*! The store observation service and surface finder. */
+  ros::ServiceClient store_observation_srv_, find_surface_srv_, transform_to_surface_frame_srv_;
 
   void recognizedObjectsCallback(const rail_manipulation_msgs::SegmentedObjectList &objects);
 };

@@ -12,6 +12,7 @@
 #include <boost/algorithm/string.hpp>
 #include <informed_object_search/ObjectSearcher.h>
 #include <interactive_world_msgs/LoadModels.h>
+#include <interactive_world_msgs/FindObservations.h>
 #include <map>
 
 using namespace std;
@@ -24,6 +25,9 @@ ObjectSearcher::ObjectSearcher()
   // setup any services/topics we need
   model_fetcher_srv_ = node_.serviceClient<interactive_world_msgs::LoadModels>(
       "/interactive_world_model_fetcher/load_models"
+  );
+  find_observations_srv_ = node_.serviceClient<interactive_world_msgs::FindObservations>(
+      "/spatial_world_model_server/find_observations"
   );
 
   // start the action server
@@ -38,6 +42,9 @@ ObjectSearcher::ObjectSearcher()
 
 void ObjectSearcher::objectSearch(const interactive_world_msgs::ObjectSearchGoalConstPtr &goal)
 {
+  // final list based on confidence (low is good)
+  map<string, double> confidences;
+
   // ignore case
   string item = boost::to_upper_copy(goal->item);
   ROS_INFO("Searching for '%s'...", item.c_str());
@@ -47,54 +54,74 @@ void ObjectSearcher::objectSearch(const interactive_world_msgs::ObjectSearchGoal
   // default to false
   result.success = false;
 
-  // request models
-  feedback.message = "Requesting trainied models...";
+  // check the world model
+  feedback.message = "Requesting world model history...";
   as_.publishFeedback(feedback);
 
-  // grab each model from the database
-  vector<interactive_world_msgs::Model> models;
-  for (size_t i = 0; i < goal->models.size(); i++)
-  {
-    // create and send a request
-    interactive_world_msgs::LoadModels loader;
-    loader.request.condition_id = goal->models[i];
-    if (model_fetcher_srv_.call(loader))
-    {
-      // search for the object we are looking for
-      vector<interactive_world_msgs::Model> &cur = loader.response.models.models;
-      for (size_t j = 0; j < cur.size(); j++)
-      {
-        // check if the names match and restrict search to surfaces
-        string placement_item = boost::to_upper_copy(cur[j].placement.item.name);
-        string placement_reference = boost::to_upper_copy(cur[j].placement.reference_frame_id);
-        if (cur[j].placement.surface.name.size() > 0 && (placement_item == item || placement_reference == item))
-        {
-          models.push_back(cur[j]);
-        }
-      }
-    } else
-    {
-      ROS_WARN("Could not load model %i.", goal->models[i]);
-      as_.setSucceeded(result, "Could not load all models from the RMS database.");
-      return;
-    }
-  }
+  interactive_world_msgs::FindObservations find_observations;
+  find_observations.request.item = item;
+  find_observations_srv_.call(find_observations);
 
-  // tally up confidences for each surface
-  map<string, double> confidences;
-  for (size_t i = 0; i < models.size(); i++)
+  for (size_t i = 0; i < find_observations.response.surfaces.size(); i++)
   {
     // get the current surface name
-    const interactive_world_msgs::Model &m = models[i];
-    string surface_name = m.placement.surface.name;
-    if (confidences.find(surface_name) == confidences.end())
+    const string &surface = find_observations.response.surfaces[i];
+    if (confidences.find(surface) == confidences.end())
     {
-      confidences[surface_name] = 0.0;
+      confidences[surface] = 0.0;
     }
 
     // add to the confidence
-    confidences[surface_name] += m.decision_value;
+    confidences[surface] += -((double) find_observations.response.times[i].sec / 31557600.0);
   }
+
+//  // request models
+//  feedback.message = "Requesting trainied models...";
+//  as_.publishFeedback(feedback);
+//
+//  // grab each model from the database
+//  vector<interactive_world_msgs::Model> models;
+//  for (size_t i = 0; i < goal->models.size(); i++)
+//  {
+//    // create and send a request
+//    interactive_world_msgs::LoadModels loader;
+//    loader.request.condition_id = goal->models[i];
+//    if (model_fetcher_srv_.call(loader))
+//    {
+//      // search for the object we are looking for
+//      vector<interactive_world_msgs::Model> &cur = loader.response.models.models;
+//      for (size_t j = 0; j < cur.size(); j++)
+//      {
+//        // check if the names match and restrict search to surfaces
+//        string placement_item = boost::to_upper_copy(cur[j].placement.item.name);
+//        string placement_reference = boost::to_upper_copy(cur[j].placement.reference_frame_id);
+//        if (cur[j].placement.surface.name.size() > 0 && (placement_item == item || placement_reference == item))
+//        {
+//          models.push_back(cur[j]);
+//        }
+//      }
+//    } else
+//    {
+//      ROS_WARN("Could not load model %i.", goal->models[i]);
+//      as_.setSucceeded(result, "Could not load all models from the RMS database.");
+//      return;
+//    }
+//  }
+//
+//  // tally up confidences for each surface
+//  for (size_t i = 0; i < models.size(); i++)
+//  {
+//    // get the current surface name
+//    const interactive_world_msgs::Model &m = models[i];
+//    string surface_name = m.placement.surface.name;
+//    if (confidences.find(surface_name) == confidences.end())
+//    {
+//      confidences[surface_name] = 0.0;
+//    }
+//
+//    // add to the confidence
+//    confidences[surface_name] += m.decision_value;
+//  }
 
   while (!confidences.empty())
   {
@@ -131,6 +158,7 @@ void ObjectSearcher::objectSearch(const interactive_world_msgs::ObjectSearchGoal
     } else
     {
       // TODO object found
+      cout << "FOUND THE OBJECT" << endl;
     }
 
     confidences.erase(best_surface);

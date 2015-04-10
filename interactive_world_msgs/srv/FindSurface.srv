@@ -1,0 +1,4 @@
+geometry_msgs/PoseStamped pose  # The pose to find the surface it is on
+---
+string surface                  # The name of the surface (blank if none are found)
+string frame_id                 # The name of the surface frame (blank if none are found)

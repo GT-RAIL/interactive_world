@@ -4,6 +4,7 @@
 #include <mysql/mysql.h>
 #include <ros/ros.h>
 #include <interactive_world_msgs/StoreObservation.h>
+#include <interactive_world_msgs/FindObservations.h>
 
 #define SWM_DEFAULT_SERVER "localhost"
 
@@ -42,6 +43,10 @@ public:
 
 private:
   bool store_observation_cb(interactive_world_msgs::StoreObservation::Request &req, interactive_world_msgs::StoreObservation::Response &resp);
+  bool find_observations_cb(interactive_world_msgs::FindObservations::Request &req,
+      interactive_world_msgs::FindObservations::Response &resp);
+
+  time_t extract_time(const std::string &str) const;
 
   MYSQL_RES *query(std::string query);
 
@@ -53,7 +58,7 @@ private:
   int port_;
   bool connected_;
 
-  ros::ServiceServer store_observation_;
+  ros::ServiceServer store_observation_, find_observations_;
 };
 
 int main(int argc, char **argv);

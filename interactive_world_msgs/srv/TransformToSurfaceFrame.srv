@@ -1,0 +1,4 @@
+geometry_msgs/PoseStamped pose  # The pose to find the surface pose of
+string surface                  # The name of the surface to transform the pose to
+---
+geometry_msgs/PoseStamped pose  # The pose in the surfeace frame

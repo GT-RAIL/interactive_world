@@ -1,5 +1,7 @@
 #include <spatial_world_model/spatial_world_model_server.h>
 
+#include <boost/algorithm/string.hpp>
+
 using namespace std;
 
 spatial_world_model_server::spatial_world_model_server() : private_("~")
@@ -24,7 +26,6 @@ spatial_world_model_server::spatial_world_model_server() : private_("~")
   }
 
   // create the table if we need to
-  mysql_free_result(this->query("DROP TABLE swms;"));
   MYSQL_RES *res = this->query(SWM_CREATE_TABLE);
   if (res)
   {
@@ -33,6 +34,8 @@ spatial_world_model_server::spatial_world_model_server() : private_("~")
 
   // setup ROS stuff
   store_observation_ = private_.advertiseService("store_observation", &spatial_world_model_server::store_observation_cb, this);
+  find_observations_ = private_.advertiseService("find_observations",
+      &spatial_world_model_server::find_observations_cb, this);
 
   ROS_INFO("Spatial World Model Initialized");
 }
@@ -42,6 +45,43 @@ spatial_world_model_server::~spatial_world_model_server()
   if (connected_)
   {
     mysql_close(conn_);
+  }
+}
+
+bool spatial_world_model_server::find_observations_cb(interactive_world_msgs::FindObservations::Request & req,
+    interactive_world_msgs::FindObservations::Response & resp)
+{
+  // convert into an SQL statement
+  stringstream ss;
+  ss << "SELECT * FROM `" << SWM_TABLE << "` WHERE UPPER(item)=\"" << boost::to_upper_copy(req.item) << "\" "
+      << "ORDER BY `time` DESC;";
+  string query = ss.str();
+
+  MYSQL_RES *res = this->query(query);
+  if (res)
+  {
+    MYSQL_ROW row;
+    while ((row = mysql_fetch_row(res)) != NULL)
+    {
+      resp.surfaces.push_back(string(row[1]));
+      resp.placement_surface_frame_ids.push_back(string(row[2]));
+      resp.item_confs.push_back(atof(row[4]));
+      resp.xs.push_back(atof(row[5]));
+      resp.ys.push_back(atof(row[6]));
+      resp.zs.push_back(atof(row[7]));
+      resp.thetas.push_back(atof(row[8]));;
+      resp.times.push_back(ros::Time(this->extract_time(row[9]), 0));
+    }
+    mysql_free_result(res);
+  }
+
+  if (resp.surfaces.empty())
+  {
+    ROS_WARN("No instances of %s found in the spatial world model.", req.item.c_str());
+    return false;
+  } else
+  {
+    return true;
   }
 }
 
@@ -89,6 +129,20 @@ MYSQL_RES *spatial_world_model_server::query(string query)
 
   // something went wrong
   return NULL;
+}
+
+time_t spatial_world_model_server::extract_time(const string &str) const
+{
+  // set values we don't need to be 0
+  struct tm t;
+  bzero(&t, sizeof(t));
+  sscanf(str.c_str(), "%d-%d-%d %d:%d:%d", &t.tm_year, &t.tm_mon, &t.tm_mday, &t.tm_hour, &t.tm_min, &t.tm_sec);
+  // correct the information for C time
+  t.tm_year -= 1900;
+  t.tm_mon -= 1;
+  // eastern time
+  t.tm_hour -= 5;
+  return mktime(&t);
 }
 
 int main(int argc, char **argv)

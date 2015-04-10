@@ -61,7 +61,7 @@ private:
   /*! The drive and search action client. */
   actionlib::SimpleActionClient<interactive_world_msgs::DriveAndSearchAction> search_ac_;
   /*! The model fetcher service client. */
-  ros::ServiceClient model_fetcher_srv_;
+  ros::ServiceClient model_fetcher_srv_, find_observations_srv_;
   /*! The action client timeout. */
   ros::Duration ac_wait_time_;
 };
