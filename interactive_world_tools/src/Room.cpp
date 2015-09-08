@@ -80,6 +80,7 @@ void Room::removeSurface(const size_t index)
 
 const Surface &Room::findSurface(const string &name) const
 {
+
   string name_uc = boost::to_upper_copy(name);
   for (size_t i = 0; i < surfaces_.size(); i++)
   {

@@ -13,7 +13,8 @@
 #include <informed_object_search/ObjectSearcher.h>
 #include <interactive_world_msgs/LoadModels.h>
 #include <interactive_world_msgs/FindObservations.h>
-#include <map>
+#include <interactive_world_msgs/GetSurfaces.h>
+#include <informed_object_search/ObjectOnSurfaceModel.h>
 
 using namespace std;
 using namespace rail::interactive_world;
@@ -29,6 +30,9 @@ ObjectSearcher::ObjectSearcher()
   find_observations_srv_ = node_.serviceClient<interactive_world_msgs::FindObservations>(
       "/spatial_world_model_server/find_observations"
   );
+  get_surfaces_srv_ = node_.serviceClient<interactive_world_msgs::GetSurfaces>(
+      "/high_level_action_server/get_surfaces"
+  );
 
   // start the action server
   as_.start();
@@ -42,8 +46,17 @@ ObjectSearcher::ObjectSearcher()
 
 void ObjectSearcher::objectSearch(const interactive_world_msgs::ObjectSearchGoalConstPtr &goal)
 {
-  // final list based on confidence (low is good)
+  // final list based on confidence
   map<string, double> confidences;
+
+  // seed every surface
+  interactive_world_msgs::GetSurfaces surfaces_req;
+  get_surfaces_srv_.call(surfaces_req);
+  for (size_t i = 0; i < surfaces_req.response.surfaces.size(); i++)
+  {
+    cout << surfaces_req.response.surfaces[i] << endl;
+    confidences[surfaces_req.response.surfaces[i]] = 0.001;
+  }
 
   // ignore case
   string item = boost::to_upper_copy(goal->item);
@@ -62,17 +75,23 @@ void ObjectSearcher::objectSearch(const interactive_world_msgs::ObjectSearchGoal
   find_observations.request.item = item;
   find_observations_srv_.call(find_observations);
 
+  // each surface has an exponential distribution
+  map<string, map<string, ObjectOnSurfaceModel> > distributions;
+  ros::Time now = ros::Time::now();
   for (size_t i = 0; i < find_observations.response.surfaces.size(); i++)
   {
-    // get the current surface name
-    const string &surface = find_observations.response.surfaces[i];
-    if (confidences.find(surface) == confidences.end())
-    {
-      confidences[surface] = 0.0;
-    }
+    ObjectOnSurfaceModel &model = distributions[find_observations.response.surfaces[i]][item];
+    model.setObject(item);
+    model.setSurface(find_observations.response.surfaces[i]);
+    model.addObservation(find_observations.response.times[i].sec, find_observations.response.removals[i].sec);
+  }
 
-    // add to the confidence
-    confidences[surface] += -((double) find_observations.response.times[i].sec / 31557600.0);
+  for (map<string, map<string, ObjectOnSurfaceModel> >::iterator iter = distributions.begin();
+       iter != distributions.end(); ++iter)
+  {
+    double p = iter->second[item].getCurrentProbability();
+    cout << "P(" << item << " on " << iter->first << ")=" << p << endl;
+    confidences[iter->first] = p;
   }
 
 //  // request models
@@ -126,21 +145,23 @@ void ObjectSearcher::objectSearch(const interactive_world_msgs::ObjectSearchGoal
   while (!confidences.empty())
   {
     // check for the current best
-    double lowest = numeric_limits<double>::infinity();
+    //double lowest = numeric_limits<double>::infinity();
+    double highest = -numeric_limits<double>::infinity();
     string best_surface;
     for (map<string, double>::iterator iter = confidences.begin(); iter != confidences.end(); ++iter)
     {
       string key = iter->first;
       double value = iter->second;
-      if (value < lowest)
+      if (value > highest)
       {
         best_surface = key;
-        lowest = value;
+        highest = value;
       }
     }
 
     // search for the highest confidence
     feedback.message = "Searching " + best_surface;
+    cout << feedback.message << endl;
     as_.publishFeedback(feedback);
 
     // perform a higher level search request
@@ -154,6 +175,7 @@ void ObjectSearcher::objectSearch(const interactive_world_msgs::ObjectSearchGoal
     if (!completed || !succeeded || !success)
     {
       feedback.message = "Object not found on " + search_goal.surface;
+      cout << feedback.message << endl;
       as_.publishFeedback(feedback);
     } else
     {

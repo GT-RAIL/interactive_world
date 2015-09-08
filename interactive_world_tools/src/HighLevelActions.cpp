@@ -41,10 +41,11 @@ HighLevelActions::HighLevelActions()
   look_at_frame_srv_ = node_.serviceClient<carl_dynamixel::LookAtFrame>("/asus_controller/look_at_frame");
   segment_srv_ = node_.serviceClient<std_srvs::Empty>("/rail_segmentation/segment");
   find_surface_srv_ = private_node_.advertiseService("find_surface", &HighLevelActions::findSurfaceCallback, this);
+  get_surfaces_srv_ = private_node_.advertiseService("get_surfaces", &HighLevelActions::getSurfacesCallback, this);
   transform_to_surface_frame_srv_ = private_node_.advertiseService("transform_to_surface_frame",
-      &HighLevelActions::transformToSurfaceFrame, this);
+                                                                   &HighLevelActions::transformToSurfaceFrame, this);
   recognized_objects_sub_ = node_.subscribe("/object_recognition_listener/recognized_objects", 1,
-      &HighLevelActions::recognizedObjectsCallback, this);
+                                            &HighLevelActions::recognizedObjectsCallback, this);
 
 // check the YAML version
 #ifdef YAMLCPP_GT_0_5_0
@@ -71,7 +72,7 @@ HighLevelActions::HighLevelActions()
       YAML::Node surface_config = surfaces_config[j];
       // parse the name, frame, and size
       Surface surface(surface_config["name"].as<string>(), surface_config["frame_id"].as<string>(),
-          surface_config["width"].as<double>(), surface_config["height"].as<double>());
+                      surface_config["width"].as<double>(), surface_config["height"].as<double>());
       // get our TF information
       static_tfs_[surface.getFrameID()] = tf_buffer.lookupTransform(fixed_frame_, surface.getFrameID(), ros::Time(0));
 
@@ -130,8 +131,23 @@ bool HighLevelActions::okay() const
   return okay_;
 }
 
-bool HighLevelActions::transformToSurfaceFrame(interactive_world_msgs::TransformToSurfaceFrame::Request & req,
-    interactive_world_msgs::TransformToSurfaceFrame::Response & resp)
+bool HighLevelActions::getSurfacesCallback(interactive_world_msgs::GetSurfaces::Request & req,
+                                           interactive_world_msgs::GetSurfaces::Response & resp)
+{
+  for (size_t i = 0; i < world_.getNumRooms(); i++)
+  {
+    const Room &room = world_.getRoom(i);
+    for (size_t j = 0; j < room.getNumSurfaces(); j++)
+    {
+      resp.surfaces.push_back(room.getSurface(j).getName());
+    }
+  }
+
+  return true;
+}
+
+bool HighLevelActions::transformToSurfaceFrame(interactive_world_msgs::TransformToSurfaceFrame::Request &req,
+    interactive_world_msgs::TransformToSurfaceFrame::Response &resp)
 {
   // check the fixed frame
   tf2::Transform t_pose_world;
@@ -143,7 +159,7 @@ bool HighLevelActions::transformToSurfaceFrame(interactive_world_msgs::Transform
     // give the buffer time to fill
     sleep(tf_buffer.getCacheLength().sec / 10);
     geometry_msgs::TransformStamped tf = tf_buffer.lookupTransform(fixed_frame_, req.pose.header.frame_id,
-        ros::Time(0));
+                                                                   ros::Time(0));
     // transform the pose
     tf2::Transform t_req_world = this->tfFromTFMessage(tf.transform);
     tf2::Transform t_pose_req = this->tfFromPoseMessage(req.pose.pose);
@@ -192,7 +208,7 @@ bool HighLevelActions::findSurfaceCallback(interactive_world_msgs::FindSurface::
     // give the buffer time to fill
     sleep(tf_buffer.getCacheLength().sec / 10);
     geometry_msgs::TransformStamped tf = tf_buffer.lookupTransform(fixed_frame_, req.pose.header.frame_id,
-        ros::Time(0));
+                                                                   ros::Time(0));
     // transform the pose
     tf2::Transform t_req_world = this->tfFromTFMessage(tf.transform);
     tf2::Transform t_pose_req = this->tfFromPoseMessage(req.pose.pose);
@@ -219,18 +235,32 @@ bool HighLevelActions::findSurfaceCallback(interactive_world_msgs::FindSurface::
           && (surface.getHeight() / 2.0 >= abs(t_pose_surface.getOrigin().y())))
       {
         // check each placement surface
+        double closest = numeric_limits<double>::infinity();
         for (size_t k = 0; k < surface.getNumPlacementSurfaces(); k++)
         {
           const PlacementSurface &ps = surface.getPlacementSurface(k);
-          // check if we are within the height of a placement surface
-          if (abs(static_tfs_[ps.getFrameID()].transform.translation.z - t_pose_world.getOrigin().z())
-              <= SURFACE_Z_THRESH)
+
+          // distance to surface
+          tf2::Transform t_ps_world = this->tfFromTFMessage(static_tfs_[ps.getFrameID()].transform);
+          double distance = t_ps_world.getOrigin().distance(t_surface_world.getOrigin());
+          if (distance < closest)
           {
-            // found the surface
-            resp.surface = surface.getName();
-            resp.frame_id = surface.getFrameID();
-            return true;
+            // check if we are within the height of a placement surface
+//            if (abs(static_tfs_[ps.getFrameID()].transform.translation.z - t_pose_world.getOrigin().z())
+//                <= SURFACE_Z_THRESH)
+//            {
+              closest = distance;
+              resp.placement_surface_frame_id = ps.getFrameID();
+//            }
           }
+        }
+
+        if (closest < numeric_limits<double>::infinity())
+        {
+          // found the surface
+          resp.surface = surface.getName();
+          resp.surface_frame_id = surface.getFrameID();
+          return true;
         }
         // if we are here, we were in the bounding box but no on the surface
         ROS_WARN("Point was found to be inside of '%s' but not on the surface itself.", surface.getName().c_str());
@@ -479,14 +509,14 @@ tf2::Transform HighLevelActions::tfFromTFMessage(const geometry_msgs::Transform 
 {
   // construct and return
   return tf2::Transform(tf2::Quaternion(tf.rotation.x, tf.rotation.y, tf.rotation.z, tf.rotation.w),
-      tf2::Vector3(tf.translation.x, tf.translation.y, tf.translation.z));
+                        tf2::Vector3(tf.translation.x, tf.translation.y, tf.translation.z));
 }
 
 tf2::Transform HighLevelActions::tfFromPoseMessage(const geometry_msgs::Pose &pose)
 {
   // construct and return
   return tf2::Transform(tf2::Quaternion(pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w),
-      tf2::Vector3(pose.position.x, pose.position.y, pose.position.z));
+                        tf2::Vector3(pose.position.x, pose.position.y, pose.position.z));
 }
 
 void HighLevelActions::recognizedObjectsCallback(const rail_manipulation_msgs::SegmentedObjectList &objects)

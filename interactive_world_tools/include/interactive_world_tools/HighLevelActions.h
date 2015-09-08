@@ -18,6 +18,7 @@
 #include <interactive_world_msgs/DriveAndSearchAction.h>
 #include <interactive_world_msgs/DriveToSurfaceAction.h>
 #include <interactive_world_msgs/FindSurface.h>
+#include <interactive_world_msgs/GetSurfaces.h>
 #include <interactive_world_msgs/TransformToSurfaceFrame.h>
 #include <interactive_world_tools/World.h>
 #include <move_base_msgs/MoveBaseAction.h>
@@ -81,6 +82,9 @@ private:
 
   bool transformToSurfaceFrame(interactive_world_msgs::TransformToSurfaceFrame::Request &req,
       interactive_world_msgs::TransformToSurfaceFrame::Response &resp);
+
+  bool getSurfacesCallback(interactive_world_msgs::GetSurfaces::Request &req,
+      interactive_world_msgs::GetSurfaces::Response &resp);
 
   /*!
    * \brief Callback for the object search action server.
@@ -160,7 +164,7 @@ private:
   /*! The camera and segmentation service clients. */
   ros::ServiceClient look_at_frame_srv_, segment_srv_;
   /*! The find surface server. */
-  ros::ServiceServer find_surface_srv_, transform_to_surface_frame_srv_;
+  ros::ServiceServer find_surface_srv_, transform_to_surface_frame_srv_, get_surfaces_srv_;
   /*! The recognized objects topic. */
   ros::Subscriber recognized_objects_sub_;
   /*! The action client timeout. */

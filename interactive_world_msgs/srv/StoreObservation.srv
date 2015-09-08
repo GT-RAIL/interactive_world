@@ -1,4 +1,5 @@
 string surface
+string surface_frame_id
 string placement_surface_frame_id
 string item
 float64 item_conf

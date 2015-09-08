@@ -1,4 +1,5 @@
-geometry_msgs/PoseStamped pose  # The pose to find the surface it is on
+geometry_msgs/PoseStamped pose     # The pose to find the surface it is on
 ---
-string surface                  # The name of the surface (blank if none are found)
-string frame_id                 # The name of the surface frame (blank if none are found)
+string surface                     # The name of the surface (blank if none are found)
+string surface_frame_id            # The name of the surface frame (blank if none are found)
+string placement_surface_frame_id  # The name of the closest placement surface frame (blank if none are found)
