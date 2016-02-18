@@ -13,7 +13,6 @@
 
 #include <actionlib/client/simple_action_client.h>
 #include <actionlib/server/simple_action_server.h>
-#include <carl_moveit/ArmAction.h>
 #include <geometry_msgs/TransformStamped.h>
 #include <interactive_world_msgs/DriveAndSearchAction.h>
 #include <interactive_world_msgs/DriveToSurfaceAction.h>
@@ -22,6 +21,7 @@
 #include <interactive_world_msgs/TransformToSurfaceFrame.h>
 #include <interactive_world_tools/World.h>
 #include <move_base_msgs/MoveBaseAction.h>
+#include <rail_manipulation_msgs/ArmAction.h>
 #include <rail_manipulation_msgs/SegmentedObjectList.h>
 #include <ros/ros.h>
 #include <tf2/LinearMath/Transform.h>
@@ -160,7 +160,7 @@ private:
   /*! The navigation action client. */
   actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> nav_ac_;
   /*! The home arm action client. */
-  actionlib::SimpleActionClient<carl_moveit::ArmAction> home_arm_ac_;
+  actionlib::SimpleActionClient<rail_manipulation_msgs::ArmAction> home_arm_ac_;
   /*! The camera and segmentation service clients. */
   ros::ServiceClient look_at_frame_srv_, segment_srv_;
   /*! The find surface server. */

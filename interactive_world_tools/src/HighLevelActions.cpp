@@ -305,8 +305,8 @@ void HighLevelActions::driveAndSearch(const interactive_world_msgs::DriveAndSear
       const PlacementSurface &ps = cur->getPlacementSurface(j);
 
       // retract the arm if we are going to be searching
-      carl_moveit::ArmGoal arm_goal;
-      arm_goal.action = carl_moveit::ArmGoal::RETRACT;
+      rail_manipulation_msgs::ArmGoal arm_goal;
+      arm_goal.action = rail_manipulation_msgs::ArmGoal::RETRACT;
       home_arm_ac_.sendGoal(arm_goal);
       bool completed = home_arm_ac_.waitForResult(ac_wait_time_);
       bool succeeded = (home_arm_ac_.getState() == actionlib::SimpleClientGoalState::SUCCEEDED);
