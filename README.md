@@ -1,4 +1,4 @@
-interactive_world [![Build Status](https://api.travis-ci.org/WPI-RAIL/interactive_world.png)](https://travis-ci.org/WPI-RAIL/interactive_world)
+interactive_world [![Build Status](https://api.travis-ci.org/GT-RAIL/interactive_world.png)](https://travis-ci.org/GT-RAIL/interactive_world)
 =================
 
 #### Home of the Interactive World Project
