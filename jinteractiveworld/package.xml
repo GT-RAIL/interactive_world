@@ -1,6 +1,6 @@
 <package>
   <name>jinteractiveworld</name>
-  <version>0.0.10</version>
+  <version>0.0.11</version>
   <description>ROS Wrapper Package for the Java Interactive World Learner</description>
 
   <author email="rctoris@wpi.edu">Russell Toris</author>
