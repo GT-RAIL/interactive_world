@@ -2,6 +2,11 @@
 Changelog for package interactive_world_parser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.0.11 (2016-02-19)
+-------------------
+* Update package.xml
+* Contributors: David Kent
+
 0.0.10 (2015-04-10)
 -------------------
 
