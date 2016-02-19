@@ -1,14 +1,14 @@
 <package>
   <name>jinteractiveworld</name>
-  <version>0.0.10</version>
+  <version>0.0.11</version>
   <description>ROS Wrapper Package for the Java Interactive World Learner</description>
 
   <author email="rctoris@wpi.edu">Russell Toris</author>
   <maintainer email="rctoris@wpi.edu">Russell Toris</maintainer>
   
   <url type="website">http://ros.org/wiki/jinteractiveworld</url>
-  <url type="bugtracker">https://github.com/WPI-RAIL/interactive_world/issues</url>
-  <url type="repository">https://github.com/WPI-RAIL/interactive_world</url>
+  <url type="bugtracker">https://github.com/GT-RAIL/interactive_world/issues</url>
+  <url type="repository">https://github.com/GT-RAIL/interactive_world</url>
 
   <license>BSD</license>
 

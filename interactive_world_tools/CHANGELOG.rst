@@ -2,6 +2,13 @@
 Changelog for package interactive_world_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.0.11 (2016-02-19)
+-------------------
+* Updated messages to use rail_manipulation_msgs insted of carl_moveit
+* Update package.xml
+* small edits to server
+* Contributors: David Kent, Russell Toris
+
 0.0.10 (2015-04-10)
 -------------------
 

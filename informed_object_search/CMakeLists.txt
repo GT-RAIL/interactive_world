@@ -34,6 +34,7 @@ include_directories(include
 add_executable(${PROJECT_NAME}
   nodes/${PROJECT_NAME}.cpp
   src/ObjectSearcher.cpp
+  src/ObjectOnSurfaceModel.cpp
 )
 
 ## Add message build dependencies (needed for source build)

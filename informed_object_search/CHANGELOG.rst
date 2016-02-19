@@ -2,6 +2,12 @@
 Changelog for package informed_object_search
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.0.11 (2016-02-19)
+-------------------
+* Update package.xml
+* small edits to server
+* Contributors: David Kent, Russell Toris
+
 0.0.10 (2015-04-10)
 -------------------
 

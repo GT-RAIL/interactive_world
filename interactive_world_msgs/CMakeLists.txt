@@ -36,8 +36,10 @@ add_service_files(FILES
   LearnModels.srv
   LoadModels.srv
   Parse.srv
+  SetObservationsRemoved.srv
   StoreObservation.srv
   TransformToSurfaceFrame.srv
+  GetSurfaces.srv
 )
 
 ## Generate actions in the 'action' folder

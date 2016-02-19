@@ -21,7 +21,10 @@ private:
   /*! The recognized objects topic. */
   ros::Subscriber recognized_objects_sub_;
   /*! The store observation service and surface finder. */
-  ros::ServiceClient store_observation_srv_, find_surface_srv_, transform_to_surface_frame_srv_;
+  ros::ServiceClient store_observation_srv_, find_surface_srv_, transform_to_surface_frame_srv_,
+      find_observations_srv_, set_observations_removed_srv_;
+
+  bool incoming_cleared_objects_;
 
   void recognizedObjectsCallback(const rail_manipulation_msgs::SegmentedObjectList &objects);
 };

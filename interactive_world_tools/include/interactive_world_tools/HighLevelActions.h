@@ -13,14 +13,15 @@
 
 #include <actionlib/client/simple_action_client.h>
 #include <actionlib/server/simple_action_server.h>
-#include <carl_moveit/ArmAction.h>
 #include <geometry_msgs/TransformStamped.h>
 #include <interactive_world_msgs/DriveAndSearchAction.h>
 #include <interactive_world_msgs/DriveToSurfaceAction.h>
 #include <interactive_world_msgs/FindSurface.h>
+#include <interactive_world_msgs/GetSurfaces.h>
 #include <interactive_world_msgs/TransformToSurfaceFrame.h>
 #include <interactive_world_tools/World.h>
 #include <move_base_msgs/MoveBaseAction.h>
+#include <rail_manipulation_msgs/ArmAction.h>
 #include <rail_manipulation_msgs/SegmentedObjectList.h>
 #include <ros/ros.h>
 #include <tf2/LinearMath/Transform.h>
@@ -81,6 +82,9 @@ private:
 
   bool transformToSurfaceFrame(interactive_world_msgs::TransformToSurfaceFrame::Request &req,
       interactive_world_msgs::TransformToSurfaceFrame::Response &resp);
+
+  bool getSurfacesCallback(interactive_world_msgs::GetSurfaces::Request &req,
+      interactive_world_msgs::GetSurfaces::Response &resp);
 
   /*!
    * \brief Callback for the object search action server.
@@ -156,11 +160,11 @@ private:
   /*! The navigation action client. */
   actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> nav_ac_;
   /*! The home arm action client. */
-  actionlib::SimpleActionClient<carl_moveit::ArmAction> home_arm_ac_;
+  actionlib::SimpleActionClient<rail_manipulation_msgs::ArmAction> home_arm_ac_;
   /*! The camera and segmentation service clients. */
   ros::ServiceClient look_at_frame_srv_, segment_srv_;
   /*! The find surface server. */
-  ros::ServiceServer find_surface_srv_, transform_to_surface_frame_srv_;
+  ros::ServiceServer find_surface_srv_, transform_to_surface_frame_srv_, get_surfaces_srv_;
   /*! The recognized objects topic. */
   ros::Subscriber recognized_objects_sub_;
   /*! The action client timeout. */

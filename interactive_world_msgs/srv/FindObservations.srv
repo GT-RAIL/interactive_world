@@ -1,10 +1,18 @@
 string item
+string surface
+string surface_frame_id
+string placement_surface_frame_id
+bool removed
 ---
+uint32[] ids
 string[] surfaces
+string[] surface_frame_ids
 string[] placement_surface_frame_ids
+string[] items
 float64[] item_confs
 float64[] xs
 float64[] ys
 float64[] zs
 float64[] thetas
 time[] times
+time[] removals
