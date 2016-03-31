@@ -9,7 +9,6 @@
  */
 
 #include <boost/algorithm/string.hpp>
-#include <carl_dynamixel/LookAtFrame.h>
 #include <interactive_world_tools/HighLevelActions.h>
 #include <ros/package.h>
 #include <std_srvs/Empty.h>
@@ -21,7 +20,6 @@ using namespace rail::interactive_world;
 
 HighLevelActions::HighLevelActions()
     : private_node_("~"), nav_ac_("/move_base", true), ac_wait_time_(AC_WAIT_TIME), fixed_frame_("map"),
-      home_arm_ac_("/carl_moveit_wrapper/common_actions/arm_action", true),
       drive_and_search_as_(
           private_node_, "drive_and_search", boost::bind(&HighLevelActions::driveAndSearch, this, _1), false
       ),
@@ -38,7 +36,6 @@ HighLevelActions::HighLevelActions()
   private_node_.getParam("fixed_frame", fixed_frame_);
 
   // setup services and topic
-  look_at_frame_srv_ = node_.serviceClient<carl_dynamixel::LookAtFrame>("/asus_controller/look_at_frame");
   segment_srv_ = node_.serviceClient<std_srvs::Empty>("/rail_segmentation/segment");
   find_surface_srv_ = private_node_.advertiseService("find_surface", &HighLevelActions::findSurfaceCallback, this);
   get_surfaces_srv_ = private_node_.advertiseService("get_surfaces", &HighLevelActions::getSurfacesCallback, this);
@@ -304,36 +301,12 @@ void HighLevelActions::driveAndSearch(const interactive_world_msgs::DriveAndSear
     {
       const PlacementSurface &ps = cur->getPlacementSurface(j);
 
-      // retract the arm if we are going to be searching
-      rail_manipulation_msgs::ArmGoal arm_goal;
-      arm_goal.action = rail_manipulation_msgs::ArmGoal::RETRACT;
-      home_arm_ac_.sendGoal(arm_goal);
-      bool completed = home_arm_ac_.waitForResult(ac_wait_time_);
-      bool succeeded = (home_arm_ac_.getState() == actionlib::SimpleClientGoalState::SUCCEEDED);
-      bool success = home_arm_ac_.getResult()->success;
-      if (!completed || !succeeded || !success)
-      {
-        ROS_ERROR("Could not retract arm during search.");
-        drive_and_search_as_.setSucceeded(result, "Could not retract arm during search.");
-      }
-
       // attempt to drive
       feedback.message = "Attempting to drive to " + ps.getNavFrameID();
       drive_and_search_as_.publishFeedback(feedback);
       if (!this->driveHelper(ps.getNavFrameID()))
       {
         ROS_WARN("Could not drive to %s, will continue the search elsewhere.", ps.getNavFrameID().c_str());
-        continue;
-      }
-
-      // look at the surface frame
-      feedback.message = "Attempting to look at " + ps.getFrameID();
-      drive_and_search_as_.publishFeedback(feedback);
-      carl_dynamixel::LookAtFrame look;
-      look.request.frame = ps.getFrameID();
-      if (!look_at_frame_srv_.call(look))
-      {
-        ROS_WARN("Could not look at %s, will continue the search elsewhere.", ps.getFrameID().c_str());
         continue;
       }
 

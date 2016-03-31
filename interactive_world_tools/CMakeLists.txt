@@ -6,8 +6,6 @@ project(interactive_world_tools)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   actionlib
-  carl_dynamixel
-  carl_moveit
   interactive_world_msgs
   geometry_msgs
   move_base_msgs
