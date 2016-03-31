@@ -1,6 +1,6 @@
 <package>
   <name>spatial_world_model</name>
-  <version>0.0.11</version>
+  <version>0.0.12</version>
   <description>Spatial World Model for Object Tracking</description>
 
   <author email="rctoris@wpi.edu">Russell Toris</author>
