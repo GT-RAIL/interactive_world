@@ -2,6 +2,11 @@
 Changelog for package interactive_world_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.0.12 (2016-03-31)
+-------------------
+* Removes outdated CARL deps
+* Contributors: Russell Toris
+
 0.0.11 (2016-02-19)
 -------------------
 * Updated messages to use rail_manipulation_msgs insted of carl_moveit
